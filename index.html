@@ -208,6 +208,7 @@ body.tv-mode .tab{font-size:13px;padding:14px 22px}
   <div class="tab" onclick="go('construction',this)">Construction</div>
   <div class="tab" onclick="go('procurement',this)">Procurement</div>
   <div class="tab" onclick="go('noc',this)">NOC & Approvals</div>
+  <div class="tab" onclick="go('project',this)">⬡ Project Detail</div>
 </div>
 
 <div class="main">
@@ -298,6 +299,55 @@ body.tv-mode .tab{font-size:13px;padding:14px 22px}
         <div class="chart-wrap"><canvas id="chart-noc"></canvas></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- PAGE 6: PROJECT DETAIL -->
+<div class="page" id="p-project">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+    <div style="font-size:11px;color:var(--d);font-weight:700;text-transform:uppercase;letter-spacing:.7px">Select Project:</div>
+    <select id="proj-select" onchange="buildProject()" style="background:var(--card);border:1px solid var(--b);color:var(--br);padding:8px 14px;border-radius:6px;font-size:13px;font-family:var(--fn);min-width:280px;cursor:pointer">
+      <option value="">— Choose a project —</option>
+    </select>
+    <div id="proj-health" style="margin-left:4px"></div>
+  </div>
+
+  <div id="proj-header" style="display:none">
+    <!-- Project Info Banner -->
+    <div class="card mb" id="proj-info"></div>
+
+    <!-- KPIs -->
+    <div class="kr" id="proj-kpis" style="margin-bottom:14px"></div>
+
+    <!-- Budget + Castings -->
+    <div class="g2">
+      <div class="card mb" id="proj-budget"></div>
+      <div class="card mb" id="proj-castings"></div>
+    </div>
+
+    <!-- Stages -->
+    <div class="card mb" id="proj-stages"></div>
+
+    <!-- Milestones -->
+    <div class="card mb" id="proj-milestones"></div>
+
+    <!-- Activities -->
+    <div class="card mb" id="proj-activities"></div>
+
+    <!-- Orders + NOCs side by side -->
+    <div class="g2">
+      <div class="card mb" id="proj-orders"></div>
+      <div class="card mb" id="proj-nocs"></div>
+    </div>
+
+    <!-- IPC -->
+    <div class="card mb" id="proj-ipc"></div>
+  </div>
+
+  <div id="proj-empty" style="padding:60px;text-align:center;color:var(--d)">
+    <div style="font-size:32px;margin-bottom:12px">⬡</div>
+    <div style="font-size:14px;font-weight:600">Select a project to view its full details</div>
+    <div style="font-size:12px;margin-top:6px">All stages, milestones, activities, budget, orders and NOCs in one view</div>
   </div>
 </div>
 
@@ -450,7 +500,7 @@ function makeHBar(id, labels, data, color) {
 }
 
 // ── BUILD ALL ──────────────────────────────────
-function buildAll(){ buildExec(); buildFinance(); buildConstruction(); buildProcurement(); buildNOC(); }
+function buildAll(){ buildExec(); buildFinance(); buildConstruction(); buildProcurement(); buildNOC(); populateProjectSelect(); }
 
 // ── PAGE 1: EXECUTIVE ─────────────────────────
 function buildExec() {
@@ -847,6 +897,203 @@ function buildNOC() {
         <td class="sm">${n['Assigned To']||'—'}</td>
       </tr>`;
     }).join('')||'<tr><td colspan="9" class="empty">No NOC records</td></tr>'}</tbody></table></div>`;
+}
+
+// ── PAGE 6: PROJECT DETAIL ──────────────────
+function populateProjectSelect() {
+  const P = D['Projects'] || [];
+  const sel = document.getElementById('proj-select');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— Choose a project —</option>';
+  const real = P.filter(p => p['Project Name'] && !['null','test','test '].includes(String(p['Project Name']).trim().toLowerCase()));
+  real.sort((a,b) => String(a['Project Name']).localeCompare(String(b['Project Name'])));
+  real.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p['Project Name'];
+    opt.textContent = p['Project Name'] + (p['Project Status'] ? ' — ' + p['Project Status'] : '');
+    sel.appendChild(opt);
+  });
+  if(current) sel.value = current;
+}
+
+function buildProject() {
+  const name = document.getElementById('proj-select').value;
+  document.getElementById('proj-header').style.display = name ? 'block' : 'none';
+  document.getElementById('proj-empty').style.display = name ? 'none' : 'block';
+  if(!name) return;
+
+  const P = D['Projects'] || [];
+  const S = D['Stages'] || [];
+  const M = D['Milestones'] || [];
+  const A = D['Activities'] || [];
+  const O = D['Orders'] || [];
+  const N = D['NOC Tracker'] || [];
+  const IPC = D['IPC Log'] || [];
+  const BS = D['Budget Summary'] || [];
+
+  const proj = P.find(p => p['Project Name'] === name) || {};
+  const stages = S.filter(s => s['Project Name'] === name);
+  const miles = M.filter(m => m['Project Name'] === name);
+  const acts = A.filter(a => a['Project Name'] === name);
+  const orders = O.filter(o => o['Project Name'] === name);
+  const nocs = N.filter(n => n['Project Name'] === name);
+  const ipcs = IPC.filter(r => r['Project Name'] === name);
+  const budget = BS.find(b => b['Project Name'] === name) || {};
+
+  const castings = acts.filter(a => a['Is Casting Activity'] === 'Yes');
+  const nonCast = acts.filter(a => a['Is Casting Activity'] !== 'Yes');
+  const h = proj['Health Status'] || proj['Auto Health Flag'] || '';
+
+  // Health badge in header
+  document.getElementById('proj-health').innerHTML = hbadge(proj['Health Status'], proj['Auto Health Flag']);
+
+  // Project Info
+  document.getElementById('proj-info').innerHTML = `
+    <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:20px;font-weight:800;color:var(--br);letter-spacing:-.5px">${name}</div>
+        <div style="font-size:12px;color:var(--d);margin-top:4px">${proj['Building Description'] || ''} · ${proj['Zone / Area'] || ''} · ${proj['Emirate'] || '—'}</div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          ${badge(proj['Project Status'])} ${hbadge(proj['Health Status'],proj['Auto Health Flag'])} ${badge(proj['Project Type'])}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:2;min-width:280px">
+        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Developer</div><div style="font-size:12px;color:var(--t);margin-top:3px">${proj['Developer'] || '—'}</div></div>
+        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Main Contractor</div><div style="font-size:12px;color:var(--t);margin-top:3px">${proj['Main Contractor'] || '—'}</div></div>
+        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Project Manager</div><div style="font-size:12px;color:var(--t);margin-top:3px">${proj['Project Manager'] || '—'}</div></div>
+        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Planned Start</div><div style="font-size:11px;font-family:var(--mn);color:var(--t);margin-top:3px">${fd(proj['Planned Start Date'])}</div></div>
+        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Planned Completion</div><div style="font-size:11px;font-family:var(--mn);color:var(--t);margin-top:3px">${fd(proj['Planned Completion Date'])}</div></div>
+        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Total Delay</div><div style="font-size:11px;font-family:var(--mn);color:${n(proj['Total Delay'])>0?'var(--red)':'var(--gn)'};margin-top:3px">${n(proj['Total Delay'])>0?'+'+n(proj['Total Delay'])+' days':'On schedule'}</div></div>
+      </div>
+    </div>`;
+
+  // KPIs
+  const totalPaid = ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()==='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const outstanding = ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const castCost = castings.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
+  const compStages = stages.filter(s=>(s['Status']||'').toLowerCase().includes('complet')).length;
+  const delayedM = miles.filter(m=>n(m['Variance Days'])>0).length;
+
+  document.getElementById('proj-kpis').innerHTML = `
+    <div class="kpi cb"><div class="kl">Contract Value</div><div class="kv" style="font-size:18px">${fmt(budget['Revised Contract Value'])}</div><div class="ks">AED revised</div></div>
+    <div class="kpi cg"><div class="kl">Total Paid</div><div class="kv" style="font-size:18px">${fmt(totalPaid)}</div><div class="ks">AED to date</div></div>
+    <div class="kpi cr"><div class="kl">Outstanding</div><div class="kv" style="font-size:18px">${fmt(outstanding)}</div><div class="ks">AED unpaid</div></div>
+    <div class="kpi cg"><div class="kl">Stages Done</div><div class="kv" style="font-size:18px">${compStages}/${stages.length}</div><div class="ks">stages complete</div></div>
+    <div class="kpi cr"><div class="kl">Delayed Milestones</div><div class="kv" style="font-size:18px">${delayedM}</div><div class="ks">behind schedule</div></div>
+    <div class="kpi co"><div class="kl">Castings Total</div><div class="kv" style="font-size:18px">${castings.length}</div><div class="ks">${fmt(castCost)} AED est.</div></div>
+    <div class="kpi cb"><div class="kl">Active NOCs</div><div class="kv" style="font-size:18px">${nocs.filter(n=>(n['Current Status']||'').toLowerCase()==='approved').length}</div><div class="ks">approved</div></div>
+    <div class="kpi co"><div class="kl">Total Orders</div><div class="kv" style="font-size:18px">${orders.length}</div><div class="ks">${fmt(orders.reduce((s,o)=>s+n(o['LPO Value']),0))} AED</div></div>
+  `;
+
+  // Budget
+  document.getElementById('proj-budget').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget Summary</span></div>
+    <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${[['Original Contract',budget['Original Contract Value'],'var(--t)'],['Approved Variations',budget['Approved Variations'],'var(--og)'],['Revised Contract',budget['Revised Contract Value'],'var(--bl)'],['Total Certified',budget['Total IPC Certified'],'var(--tl)'],['Total Paid',budget['Total IPC Paid'],'var(--gn)'],['Balance Remaining',budget['Balance Remaining'],'var(--og)'],['Orders Committed',budget['Total Orders Committed'],'var(--pu)'],].map(([lbl,val,col])=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:6px;padding:10px 12px">
+          <div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">${lbl}</div>
+          <div style="font-size:15px;font-weight:700;font-family:var(--mn);color:${col};margin-top:4px">${fmtAED(val)}</div>
+        </div>`).join('')}
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:6px;padding:10px 12px">
+        <div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Financial Progress</div>
+        <div style="margin-top:8px">${bar(budget['Financial Progress %'],120)}</div>
+      </div>
+    </div>`;
+
+  // Castings
+  document.getElementById('proj-castings').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Slab Castings</span><span class="cc">${castings.length} total</span></div>
+    <div class="scroll" style="max-height:280px">
+    ${castings.length ? castings.sort((a,b)=>new Date(a['Planned Start Date'])-new Date(b['Planned Start Date'])).map(a=>`
+      <div class="ci">
+        <div><div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</div><div class="ci-m">${a['Stage Label']||'—'} · ${a['Milestone Label']||'—'}</div><div class="ci-m">${a['Assigned Contractor']||'—'}</div></div>
+        <div style="text-align:right"><div class="ci-d">${fd(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${n(a['Estimated Concrete Cost (AED)'])?`<div class="ci-c">${fmtAED(a['Estimated Concrete Cost (AED)'])}</div>`:''}${badge(a['Status'])}</div>
+      </div>`).join('') : '<div class="empty">No casting activities</div>'}
+    </div>`;
+
+  // Stages
+  document.getElementById('proj-stages').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Stages</span><span class="cc">${stages.length} stages</span></div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>Stage</th><th>Status</th><th>Completion</th><th>Planned Start</th><th>Planned End</th><th>Forecast End</th><th>Variance</th><th>Gate</th></tr></thead>
+    <tbody>${stages.map(s=>`<tr>
+      <td style="font-weight:700">${s['Stage Label']||'—'}</td>
+      <td>${badge(s['Status'])}</td>
+      <td>${bar(s['Stage Completion %'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(s['Planned Start Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(s['Planned End Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px;color:${n(s['Variance Days'])>0?'var(--red)':'var(--d)'}">${n(s['Variance Days'])>0?'+'+n(s['Variance Days'])+'d':'—'}</td>
+      <td>${badge(s['Gate Status'])}</td>
+    </tr>`).join('')||'<tr><td colspan="8" class="empty">No stages — run Clone From Template</td></tr>'}</tbody></table></div>`;
+
+  // Milestones
+  document.getElementById('proj-milestones').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Milestones</span><span class="cc">${miles.length} milestones</span></div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>Milestone</th><th>Stage</th><th>Status</th><th>Planned End</th><th>Actual End</th><th>Variance</th></tr></thead>
+    <tbody>${miles.map(m=>{const v=n(m['Variance Days']); return `<tr>
+      <td style="font-weight:700">${m['Milestone Label']||'—'}</td>
+      <td class="sm">${m['Stage Label']||'—'}</td>
+      <td>${badge(m['Status'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(m['Actual End Date'])}</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--d)'}">${v>0?'+'+v:v||'—'} days</td>
+    </tr>`}).join('')||'<tr><td colspan="6" class="empty">No milestones</td></tr>'}</tbody></table></div>`;
+
+  // Activities
+  document.getElementById('proj-activities').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Activities</span><span class="cc">${nonCast.length} activities</span></div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>Activity</th><th>Stage</th><th>Milestone</th><th>Trade</th><th>Contractor</th><th>Start</th><th>End</th><th>Progress</th><th>Status</th><th style="text-align:right">Est. Cost</th></tr></thead>
+    <tbody>${nonCast.map(a=>`<tr>
+      <td style="font-weight:600">${a['Activity Name']||'—'}</td>
+      <td class="sm">${a['Stage Label']||'—'}</td>
+      <td class="sm">${a['Milestone Label']||'—'}</td>
+      <td class="sm">${a['Trade / Discipline']||'—'}</td>
+      <td class="sm">${a['Assigned Contractor']||'—'}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned End Date'])}</td>
+      <td>${bar(a['Progress %'],55)}</td>
+      <td>${badge(a['Status'])}</td>
+      <td class="n sm" style="color:var(--gd)">${n(a['Estimated Cost (AED)'])?fmt(n(a['Estimated Cost (AED)']))+' AED':'—'}</td>
+    </tr>`).join('')||'<tr><td colspan="10" class="empty">No activities</td></tr>'}</tbody></table></div>`;
+
+  // Orders
+  document.getElementById('proj-orders').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Orders</span><span class="cc">${orders.length} orders · ${fmtAED(orders.reduce((s,o)=>s+n(o['LPO Value']),0))}</span></div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>Description</th><th>Status</th><th>Order By</th><th>Delivery</th><th style="text-align:right">LPO</th></tr></thead>
+    <tbody>${orders.map(o=>`<tr>
+      <td style="font-weight:600;font-size:12px">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td>
+      <td>${badge(o['Procurement Status'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(o['Order By Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(o['Expected Delivery Date'])}</td>
+      <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
+    </tr>`).join('')||'<tr><td colspan="5" class="empty">No orders</td></tr>'}</tbody></table></div>`;
+
+  // NOCs
+  document.getElementById('proj-nocs').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOCs</span><span class="cc">${nocs.length} NOCs</span></div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>NOC Type</th><th>Authority</th><th>Status</th><th>Expiry</th><th>Days Left</th></tr></thead>
+    <tbody>${nocs.map(n=>{const days=parseInt(n['Days to Expiry']); return `<tr>
+      <td style="font-weight:600">${n['NOC Type']||'—'}</td>
+      <td class="sm">${n['Authority Name']||'—'}</td>
+      <td>${badge(n['Current Status'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${isNaN(days)?'var(--d)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)'}">${isNaN(days)?'—':days+' days'}</td>
+    </tr>`}).join('')||'<tr><td colspan="5" class="empty">No NOCs</td></tr>'}</tbody></table></div>`;
+
+  // IPC
+  document.getElementById('proj-ipc').innerHTML = `
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>IPC Payment Log</span><span class="cc">${ipcs.length} IPCs</span></div>
+    <div class="scroll"><table class="tbl"><thead><tr><th>IPC No</th><th>Work Covered</th><th>Period</th><th>Due Date</th><th>Paid Date</th><th>Status</th><th style="text-align:right">Gross</th><th style="text-align:right">Net Due</th></tr></thead>
+    <tbody>${ipcs.sort((a,b)=>new Date(b['Payment Due Date'])-new Date(a['Payment Due Date'])).map(r=>`<tr>
+      <td style="font-family:var(--mn);font-size:11px">${r['IPC Number']||'—'}</td>
+      <td class="sm" style="max-width:160px">${String(r['Work Covered']||'—').substring(0,50)}</td>
+      <td class="sm">${fds(r['Period From'])} – ${fds(r['Period To'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(r['Actual Payment Date'])}</td>
+      <td>${badge(r['Payment Status'])}</td>
+      <td class="n sm">${fmtAED(r['Gross Amount'])}</td>
+      <td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td>
+    </tr>`).join('')||'<tr><td colspan="8" class="empty">No IPC records</td></tr>'}</tbody></table></div>`;
 }
 
 // ── INIT ─────────────────────────────────────
