@@ -110,7 +110,8 @@ body{background:var(--bg);color:var(--t);font-family:var(--fn);min-height:100vh;
 
 /* CHARTS */
 .chart-wrap{padding:14px;position:relative}
-.chart-wrap canvas{max-height:220px}
+.chart-wrap canvas{max-height:240px}
+.donut-wrap{height:220px;position:relative;padding:10px 14px}
 
 /* CAST ROW */
 .ci{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(26,45,71,.4)}
@@ -125,13 +126,17 @@ body{background:var(--bg);color:var(--t);font-family:var(--fn);min-height:100vh;
 
 /* TV MODE */
 body.tv-mode .hdr{height:64px}
-body.tv-mode .kv{font-size:32px}
-body.tv-mode .kl{font-size:11px}
-body.tv-mode .tbl td{font-size:14px;padding:12px 14px}
-body.tv-mode .tbl th{font-size:11px;padding:9px 14px}
-body.tv-mode .badge{font-size:11px;padding:3px 8px}
-body.tv-mode .kpi{padding:18px 20px}
-body.tv-mode .ct{font-size:13px}
+body.tv-mode .kv{font-size:34px;letter-spacing:-2px}
+body.tv-mode .kl{font-size:11px;letter-spacing:1px}
+body.tv-mode .ks{font-size:12px}
+body.tv-mode .tbl td{font-size:15px;padding:13px 16px}
+body.tv-mode .tbl th{font-size:11px;padding:10px 16px}
+body.tv-mode .badge{font-size:12px;padding:4px 10px}
+body.tv-mode .kpi{padding:20px 22px}
+body.tv-mode .ct{font-size:14px}
+body.tv-mode .logo-name{font-size:20px}
+body.tv-mode .logo-sub{font-size:13px}
+body.tv-mode .tab{font-size:13px;padding:14px 22px}
 
 /* UTIL */
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--b);border-top-color:var(--bl);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
@@ -144,12 +149,21 @@ body.tv-mode .ct{font-size:13px}
 
 /* MOBILE */
 @media(max-width:600px){
-  .main{padding:10px 12px}
+  .main{padding:10px 10px}
   .kr{grid-template-columns:repeat(2,1fr)}
-  .hdr{padding:0 12px}
+  .hdr{padding:0 10px;height:48px}
   .logo-name{font-size:12px}
   .logo-sub{display:none}
   .kv{font-size:18px}
+  .tabs{padding:0 10px}
+  .tab{padding:10px 12px;font-size:9px}
+  .tbl th,.tbl td{padding:7px 8px;font-size:11px}
+  .tv-btn{display:none}
+  .kpi{padding:10px 12px}
+}
+@media(max-width:400px){
+  .kr{grid-template-columns:1fr 1fr}
+  .kv{font-size:16px}
 }
 </style>
 </head>
@@ -157,9 +171,8 @@ body.tv-mode .ct{font-size:13px}
 
 <div class="hdr">
   <div class="logo">
-    <div class="logo-box">Object 1</div>
     <div>
-      <div class="logo-name">Real Estate Development</div>
+      <div class="logo-name">Object<span style="color:var(--bl)">1</span> <span style="color:var(--d);font-weight:400;font-size:13px">Real Estate Development</span></div>
       <div class="logo-sub">Owner Operations Dashboard</div>
     </div>
   </div>
@@ -185,11 +198,11 @@ body.tv-mode .ct{font-size:13px}
   <div class="kr" id="e-kpis"><span class="spin"></span></div>
   <div class="g13">
     <div>
-      <div class="chart-wrap card mb" style="height:260px">
+      <div class="chart-wrap card mb" style="height:290px">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Project Health</span></div>
         <div class="chart-wrap"><canvas id="chart-health"></canvas></div>
       </div>
-      <div class="chart-wrap card mb" style="height:260px">
+      <div class="chart-wrap card mb" style="height:290px">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Payment Status</span></div>
         <div class="chart-wrap"><canvas id="chart-payment"></canvas></div>
       </div>
@@ -376,7 +389,8 @@ function makeDonut(id, labels, data, colors) {
     type:'doughnut',
     data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:1,borderColor:'rgba(0,0,0,.3)'}]},
     options:{
-      responsive:true,maintainAspectRatio:true,cutout:'65%',
+      responsive:true,maintainAspectRatio:false,cutout:'62%',
+      layout:{padding:10},
       plugins:{legend:{position:'right',labels:{boxWidth:10,padding:12,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw}`}}},
     }
   });
