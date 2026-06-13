@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Object1 — Owner Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f9;--card:#ffffff;--border:#e0e8f4;
+  --text:#1e3a5f;--dim:#64748b;--dark:#0f2042;
+  --red:#dc2626;--redbg:#fef2f2;--redborder:#fecaca;
+  --og:#ea580c;--ogbg:#fff7ed;--ogborder:#fed7aa;
+  --gn:#16a34a;--gnbg:#f0fdf4;--gnborder:#bbf7d0;
+  --bl:#2563eb;--blbg:#eff6ff;--blborder:#bfdbfe;
+  --pu:#7c3aed;--pubg:#f5f3ff;--puborder:#ddd6fe;
+  --gd:#d97706;--gdbg:#fffbeb;--gdborder:#fde68a;
+  --tl:#0891b2;--tlbg:#ecfeff;--tlborder:#a5f3fc;
+  --nav:#0f2042;
+  --fn:'Outfit',sans-serif;--mn:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--fn);min-height:100vh;overflow-x:hidden}
+
+/* ══ HEADER ══════════════════════════════════════ */
+.hdr{
+  background:linear-gradient(135deg,#0f2042,#1a3a6e);
+  padding:0 20px;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:300;
+  box-shadow:0 2px 12px rgba(15,32,66,.3)
+}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-box{background:#fff;color:#0f2042;font-weight:900;font-size:13px;padding:4px 7px;border-radius:5px;line-height:1}
+.logo-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.sync-lbl{font-size:10px;color:rgba(255,255,255,.55);font-family:var(--mn)}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mn);color:#4ade80;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);padding:3px 8px;border-radius:20px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
+.tv-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 9px;border-radius:4px;cursor:pointer;font-family:var(--mn)}
+
+/* ══ DESKTOP TABS ═════════════════════════════════ */
+.dtabs{background:#fff;border-bottom:2px solid var(--border);padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.dtabs::-webkit-scrollbar{display:none}
+.dtab{padding:12px 16px;font-size:10px;font-weight:700;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;text-transform:uppercase;letter-spacing:.7px}
+.dtab:hover{color:var(--dark)}
+.dtab.active{color:var(--dark);border-bottom-color:var(--bl)}
+
+/* ══ MOBILE BOTTOM NAV ════════════════════════════ */
+.mnav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid var(--border);
+  z-index:300;padding:0;
+  box-shadow:0 -2px 12px rgba(0,0,0,.08)
+}
+.mnav-items{display:flex;justify-content:space-around}
+.mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 10px;cursor:pointer;color:var(--dim);transition:color .15s;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;min-width:0}
+.mnav-item svg{width:20px;height:20px;stroke-width:1.8}
+.mnav-item.active{color:var(--bl)}
+.mnav-item.active svg{stroke:var(--bl)}
+
+/* ══ LAYOUT ═══════════════════════════════════════ */
+.main{padding:16px 18px;max-width:1800px;margin:0 auto}
+.page{display:none}
+.page.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ══ KPI ROW ══════════════════════════════════════ */
+.kr{display:grid;gap:10px;margin-bottom:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(15,32,66,.06)}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:2px 2px 0 0}
+.kpi.cr::after{background:var(--red)}.kpi.co::after{background:var(--og)}
+.kpi.cg::after{background:var(--gn)}.kpi.cb::after{background:var(--bl)}
+.kpi.cp::after{background:var(--pu)}.kpi.cd::after{background:var(--gd)}
+.kpi.ct2::after{background:var(--tl)}
+.kl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.9px;margin-bottom:5px;font-weight:700}
+.kv{font-size:22px;font-weight:800;color:var(--dark);line-height:1;letter-spacing:-1px}
+.ks{font-size:10px;color:var(--dim);margin-top:3px}
+
+/* ══ GRID ═════════════════════════════════════════ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.g13{display:grid;grid-template-columns:1.2fr 2.8fr;gap:12px;margin-bottom:12px}
+.mb{margin-bottom:12px}
+
+/* ══ CARD ════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(15,32,66,.06);margin-bottom:12px}
+.ch{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#f8fafd}
+.ct{font-size:11px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
+.dc{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cc{font-size:10px;color:var(--dim);font-family:var(--mn)}
+
+/* ══ TABLE ═══════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;min-width:550px}
+.tbl th{padding:8px 12px;font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;background:#f8fafd;position:sticky;top:0;z-index:2;font-weight:700}
+.tbl td{padding:9px 12px;font-size:12px;color:var(--text);border-bottom:1px solid #edf2f8;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#f5f8ff}
+.tbl .n{font-family:var(--mn);text-align:right;color:var(--dark)}
+.tbl .sm{font-size:10px;color:var(--dim)}
+.scroll{overflow-y:auto;max-height:340px;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;-webkit-overflow-scrolling:touch}
+
+/* ══ BADGE ═══════════════════════════════════════ */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.br{background:var(--redbg);color:var(--red);border:1px solid var(--redborder)}
+.bo{background:var(--ogbg);color:var(--og);border:1px solid var(--ogborder)}
+.bg{background:var(--gnbg);color:var(--gn);border:1px solid var(--gnborder)}
+.bb{background:var(--blbg);color:var(--bl);border:1px solid var(--blborder)}
+.bd{background:#f8fafc;color:var(--dim);border:1px solid #e2e8f0}
+.bgd{background:var(--gdbg);color:var(--gd);border:1px solid var(--gdborder)}
+
+/* ══ PROGRESS ════════════════════════════════════ */
+.pw{background:#e2e8f0;border-radius:3px;height:6px;overflow:hidden;min-width:60px}
+.pb{height:100%;border-radius:3px}
+
+/* ══ CAST ROW ════════════════════════════════════ */
+.ci{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 15px;border-bottom:1px solid #edf2f8;gap:10px}
+.ci:last-child{border-bottom:none}
+.ci-n{font-size:12px;font-weight:600;color:var(--dark)}
+.ci-m{font-size:10px;color:var(--dim);margin-top:2px}
+.ci-d{font-size:10px;font-family:var(--mn);color:var(--og)}
+.ci-c{font-size:12px;font-weight:700;font-family:var(--mn);color:var(--gd)}
+.ci-v{font-size:10px;color:var(--dim)}
+.tag-w{background:var(--ogbg);color:var(--og);font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;display:inline-block;margin-bottom:2px}
+.tag-ll{background:var(--redbg);color:var(--red);font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;margin-left:4px;vertical-align:middle}
+
+/* ══ MOBILE CARD LIST (replaces tables) ══════════ */
+.mlist{display:none}
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(15,32,66,.05)}
+.mcard-title{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:3px}
+.mcard-sub{font-size:11px;color:var(--dim);margin-bottom:8px}
+.mcard-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.mcard-label{font-size:10px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.mcard-val{font-size:12px;font-weight:700;color:var(--dark);font-family:var(--mn)}
+.mcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.mcard-item{background:#f8fafd;border-radius:6px;padding:7px 10px}
+.mcard-item-lbl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.mcard-item-val{font-size:12px;font-weight:700;color:var(--dark);margin-top:2px}
+.mcard-bar{margin-top:8px}
+.mcard-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.mcard-proj-link{color:var(--bl);font-weight:700;font-size:14px;text-decoration:none}
+
+/* ══ CHART ═══════════════════════════════════════ */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(15,32,66,.06)}
+.chart-inner{padding:12px 14px}
+.chart-inner canvas{max-height:220px}
+
+/* ══ UTIL ════════════════════════════════════════ */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--bl);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{padding:28px;text-align:center;color:#94a3b8;font-size:11px}
+.kpi-anim{opacity:0;animation:slideUp .4s ease forwards}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ PROJECT DETAIL SELECTOR ════════════════════ */
+.proj-selector{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.proj-select-input{background:#fff;border:1px solid var(--border);color:var(--dark);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--fn);min-width:260px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+
+/* ══ TV MODE ════════════════════════════════════ */
+body.tv-mode{background:#070d1a;color:#e2eeff}
+body.tv-mode .card,body.tv-mode .kpi,body.tv-mode .chart-card{background:#0f1e34;border-color:#1d3352;box-shadow:none}
+body.tv-mode .tbl th{background:#091628;color:#a8c8f0;border-color:#1d3352}
+body.tv-mode .tbl td{color:#e2eeff;border-color:rgba(29,51,82,.4)}
+body.tv-mode .tbl tr:hover td{background:rgba(47,127,255,.06)}
+body.tv-mode .ch{background:rgba(0,0,0,.2);border-color:#1d3352}
+body.tv-mode .ct{color:#fff}
+body.tv-mode .kv{color:#fff}
+body.tv-mode .kl,.ks{color:#7a9ec4}
+body.tv-mode .dtabs{background:#0d1a2e;border-color:#1d3352}
+body.tv-mode .dtab{color:#4a6585}
+body.tv-mode .dtab.active{color:#fff}
+body.tv-mode .pw{background:rgba(255,255,255,.1)}
+body.tv-mode .kv{font-size:34px}
+body.tv-mode .tbl td{font-size:15px;padding:13px 14px}
+body.tv-mode .tbl th{font-size:11px}
+body.tv-mode .badge{font-size:12px;padding:4px 10px}
+body.tv-mode .kpi{padding:20px 22px}
+body.tv-mode .ct{font-size:14px}
+
+/* ══ DESKTOP ONLY ════════════════════════════════ */
+@media(min-width:769px){
+  .mnav{display:none!important}
+  .mlist{display:none!important}
+  .main{padding-bottom:16px}
+}
+
+/* ══ MOBILE ONLY ══════════════════════════════════ */
+@media(max-width:768px){
+  .dtabs{display:none}
+  .mnav{display:block}
+  .main{padding:12px 12px 80px}
+  /* Hide desktop tables, show mobile cards */
+  .tbl-wrap,.scroll .tbl{display:none}
+  .mlist{display:block}
+  /* Hide desktop chart cards */
+  .g13 > div:first-child{display:none}
+  .g13{grid-template-columns:1fr}
+  .g2,.g3{grid-template-columns:1fr}
+  /* KPIs 2 col */
+  .kr{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:11px 13px}
+  .kv{font-size:20px}
+  .kl{font-size:9px}
+  .ks{font-size:9px}
+  .chart-card{display:none}
+  .hdr{padding:0 12px;height:48px}
+  .logo-name{font-size:13px}
+  .logo-sub{display:none}
+  .tv-btn{display:none}
+  .ch{padding:9px 13px}
+  .ct{font-size:10px}
+  .proj-select-input{min-width:unset;width:100%}
+  .proj-selector{flex-direction:column;align-items:stretch}
+}
+@media(max-width:400px){
+  .main{padding:10px 10px 76px}
+  .kv{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-box">Object 1</div>
+    <div>
+      <div class="logo-name">Real Estate Development</div>
+      <div class="logo-sub">Owner Operations Dashboard</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="sync-lbl" id="syncTime">Loading...</div>
+    <button class="tv-btn" onclick="toggleTV()">⛶ TV</button>
+    <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+  </div>
+</div>
+
+<!-- DESKTOP TABS -->
+<div class="dtabs" id="dtabs">
+  <div class="dtab active" onclick="go('exec',this)">Executive Summary</div>
+  <div class="dtab" onclick="go('finance',this)">Finance & Budget</div>
+  <div class="dtab" onclick="go('construction',this)">Construction</div>
+  <div class="dtab" onclick="go('procurement',this)">Procurement</div>
+  <div class="dtab" onclick="go('noc',this)">NOC & Approvals</div>
+  <div class="dtab" onclick="go('project',this)">⬡ Project Detail</div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mnav">
+  <div class="mnav-items">
+    <div class="mnav-item active" onclick="go('exec',this)" data-page="exec">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Summary
+    </div>
+    <div class="mnav-item" onclick="go('finance',this)" data-page="finance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Finance
+    </div>
+    <div class="mnav-item" onclick="go('construction',this)" data-page="construction">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      Build
+    </div>
+    <div class="mnav-item" onclick="go('procurement',this)" data-page="procurement">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Orders
+    </div>
+    <div class="mnav-item" onclick="go('noc',this)" data-page="noc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      NOC
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ════ EXEC ════ -->
+<div class="page active" id="p-exec">
+  <div class="kr" id="e-kpis"><span class="spin"></span></div>
+  <div class="g13">
+    <div>
+      <div class="chart-card mb">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Project Health</span></div>
+        <div class="chart-inner"><canvas id="chart-health"></canvas></div>
+      </div>
+      <div class="chart-card mb">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Payment Status</span></div>
+        <div class="chart-inner"><canvas id="chart-payment"></canvas></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>All Projects</span><span class="cc" id="e-proj-count"></span></div>
+        <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="e-proj-tbl"></table></div></div>
+        <div class="mlist" id="e-proj-cards"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Casting Schedule — This Month</span><span class="cc" id="e-cast-count"></span></div>
+    <div id="e-castings"></div>
+  </div>
+  <div class="card mt" style="margin-top:12px">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Construction Activities — This Week</span><span class="cc" id="e-act-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="e-act-tbl"></table></div></div>
+    <div class="mlist" id="e-act-cards"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>Long Lead — Action Required</span><span class="cc" id="e-ll-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="e-ll-tbl"></table></div></div>
+    <div class="mlist" id="e-ll-cards"></div>
+  </div>
+</div>
+
+<!-- ════ FINANCE ════ -->
+<div class="page" id="p-finance">
+  <div class="kr" id="f-kpis"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget per Project</span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="f-budget-tbl"></table></div></div>
+      <div class="mlist" id="f-budget-cards"></div>
+    </div>
+    <div>
+      <div class="chart-card mb">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Contract vs Paid</span></div>
+        <div class="chart-inner"><canvas id="chart-budget-bar"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Upcoming Payments</span><span class="cc" id="f-upcoming-count"></span></div>
+        <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="f-upcoming-tbl"></table></div></div>
+        <div class="mlist" id="f-upcoming-cards"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Full IPC Log</span><span class="cc" id="f-ipc-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="f-ipc-tbl"></table></div></div>
+    <div class="mlist" id="f-ipc-cards"></div>
+  </div>
+</div>
+
+<!-- ════ CONSTRUCTION ════ -->
+<div class="page" id="p-construction">
+  <div class="kr" id="c-kpis"></div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Slab Casting Schedule</span><span class="cc" id="c-cast-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-cast-tbl"></table></div></div>
+    <div class="mlist" id="c-cast-cards"></div>
+  </div>
+  <div class="g2" style="margin-top:12px">
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Stages</span><span class="cc" id="c-stage-count"></span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-stage-tbl"></table></div></div>
+      <div class="mlist" id="c-stage-cards"></div>
+    </div>
+    <div>
+      <div class="chart-card mb">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Stage Completion</span></div>
+        <div class="chart-inner"><canvas id="chart-stages"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Milestones</span><span class="cc" id="c-mile-count"></span></div>
+        <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-mile-tbl"></table></div></div>
+        <div class="mlist" id="c-mile-cards"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Activities</span><span class="cc" id="c-act-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-act-tbl"></table></div></div>
+    <div class="mlist" id="c-act-cards"></div>
+  </div>
+</div>
+
+<!-- ════ PROCUREMENT ════ -->
+<div class="page" id="p-procurement">
+  <div class="kr" id="pr-kpis"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>Long Lead Orders</span><span class="cc" id="pr-ll-count"></span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="pr-ll-tbl"></table></div></div>
+      <div class="mlist" id="pr-ll-cards"></div>
+    </div>
+    <div class="chart-card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Order Status</span></div>
+      <div class="chart-inner"><canvas id="chart-orders"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Orders</span><span class="cc" id="pr-all-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="pr-all-tbl"></table></div></div>
+    <div class="mlist" id="pr-all-cards"></div>
+  </div>
+</div>
+
+<!-- ════ NOC ════ -->
+<div class="page" id="p-noc">
+  <div class="kr" id="n-kpis"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOC Tracker</span><span class="cc" id="n-noc-count"></span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="n-noc-tbl"></table></div></div>
+      <div class="mlist" id="n-noc-cards"></div>
+    </div>
+    <div class="chart-card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOC Status</span></div>
+      <div class="chart-inner"><canvas id="chart-noc"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PROJECT DETAIL ════ -->
+<div class="page" id="p-project">
+  <div class="proj-selector">
+    <div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.7px">Select Project</div>
+    <select id="proj-select" class="proj-select-input" onchange="buildProject()">
+      <option value="">— Choose a project —</option>
+    </select>
+    <div id="proj-health"></div>
+  </div>
+  <div id="proj-header" style="display:none">
+    <div class="card" id="proj-info"></div>
+    <div class="kr" id="proj-kpis" style="margin-top:12px"></div>
+    <div class="g2" style="margin-top:12px">
+      <div class="card" id="proj-budget"></div>
+      <div class="card" id="proj-castings"></div>
+    </div>
+    <div class="card" id="proj-stages"></div>
+    <div class="card" style="margin-top:12px" id="proj-milestones"></div>
+    <div class="card" style="margin-top:12px" id="proj-activities"></div>
+    <div class="g2" style="margin-top:12px">
+      <div class="card" id="proj-orders"></div>
+      <div class="card" id="proj-nocs"></div>
+    </div>
+    <div class="card" style="margin-top:12px" id="proj-ipc"></div>
+  </div>
+  <div id="proj-empty" style="padding:60px;text-align:center;color:#94a3b8">
+    <div style="font-size:32px;margin-bottom:12px">⬡</div>
+    <div style="font-size:14px;font-weight:600;color:var(--dark)">Select a project to view full details</div>
+    <div style="font-size:12px;margin-top:6px">Budget · Stages · Milestones · Activities · Orders · NOCs · IPCs</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const SHEET_ID = '1XEtxINVudEtJK9dfDUcNqdjL8Om-yEDYaakKX8jqSe0';
+const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
+let D = {};
+const CHARTS = {};
+const isMobile = () => window.innerWidth <= 768;
+
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#e2e8f0';
+Chart.defaults.font.family = "'Outfit', sans-serif";
+Chart.defaults.animation = {duration:900, easing:'easeOutQuart'};
+
+// ═══════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════
+function weekBounds(){
+  const now=new Date(), day=now.getDay();
+  const mon=new Date(now); mon.setDate(now.getDate()-(day===0?6:day-1)); mon.setHours(0,0,0,0);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
+  return {s:mon,e:sun};
+}
+function monthBounds(){
+  const now=new Date();
+  return {s:new Date(now.getFullYear(),now.getMonth(),1),e:new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59)};
+}
+function inR(d,b){if(!d||d==='') return false; const dt=parseDate(d); return !isNaN(dt)&&dt>=b.s&&dt<=b.e;}
+const WK=weekBounds(), MO=monthBounds();
+
+// ═══════════════════════════════════════════
+// PARSE DATE — handles Google Sheets "Date(2026,8,15)" format
+// ═══════════════════════════════════════════
+function parseDate(d){
+  if(!d||d==='null'||d==='') return new Date('invalid');
+  const s=String(d).trim();
+  // Google Sheets gviz format: Date(year,month,day) — month is 0-indexed
+  const m=s.match(/^Date\((\d+),(\d+),(\d+)\)/);
+  if(m) return new Date(parseInt(m[1]),parseInt(m[2]),parseInt(m[3]));
+  return new Date(s);
+}
+
+function fd(d){
+  if(!d||d===''||d==='null') return '—';
+  const dt=parseDate(d);
+  if(isNaN(dt)) return String(d);
+  return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});
+}
+function fds(d){
+  if(!d||d===''||d==='null') return '—';
+  const dt=parseDate(d);
+  if(isNaN(dt)) return String(d);
+  return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const n=v=>parseFloat(String(v||'').replace(/,/g,''))||0;
+function fmt(v){const x=n(v);if(x>=1000000)return(x/1000000).toFixed(1)+'M';if(x>=1000)return Math.round(x/1000)+'K';return x.toLocaleString();}
+function fmtAED(v){return n(v).toLocaleString('en-AE',{maximumFractionDigits:0})+' AED';}
+function pct(p){const v=parseFloat(p)||0;if(v>0&&v<=1)return Math.min(100,v*100);return Math.min(100,v);}
+function bc(p){const x=pct(p);return x<30?'var(--red)':x<70?'var(--og)':'var(--gn)';}
+function bar(p,w=70){const v=pct(p);return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${v}%;background:${bc(v)}"></div></div><span style="font-size:9px;color:var(--dim);font-family:var(--mn)">${v.toFixed(0)}%</span></div>`;}
+function badge(s){
+  if(!s||s==='null'||s==='') return '<span class="badge bd">—</span>';
+  const l=s.toLowerCase().trim();
+  const c=l.includes('delay')||l.includes('overdue')||l.includes('not ordered')?'br':
+           l.includes('risk')||l.includes('pending')||l.includes('draft')||l.includes('concept')||l.includes('hold')||l.includes('review')?'bo':
+           l.includes('track')||l.includes('paid')||l.includes('complet')||l.includes('handed')||l.includes('deliver')?'bg':
+           l.includes('progress')||l.includes('certif')||l.includes('issued')||l.includes('approved')||l.includes('construction')||l.includes('lpo')||l.includes('under review')?'bb':
+           'bd';
+  return `<span class="badge ${c}">${s}</span>`;
+}
+function hbadge(h,f){const v=h||f||'';if(!v||v==='null')return'<span class="badge bd">—</span>';const l=v.toLowerCase();const c=l.includes('delay')?'br':l.includes('risk')?'bo':l.includes('track')?'bg':'bd';return`<span class="badge ${c}">${v}</span>`;}
+
+// ═══════════════════════════════════════════
+// FETCH — fix gviz date format
+// ═══════════════════════════════════════════
+async function fetchSheet(name){
+  try{
+    const url = BASE+encodeURIComponent(name);
+    const r=await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const txt=await r.text();
+    if(!txt.includes('google.visualization')) throw new Error('Not a gviz response');
+    const json=JSON.parse(txt.replace(/^[^{]*/,'').replace(/[^}]*$/,''));
+    if(!json.table) throw new Error('No table in response');
+    const cols=json.table.cols.map(c=>c.label);
+    return (json.table.rows||[]).map(row=>{
+      const obj={};
+      cols.forEach((c,i)=>{
+        const cell=row.c?.[i];
+        if(!cell){obj[c]='';return;}
+        const raw=cell.v;
+        const fmt2=cell.f;
+        if(raw!==null&&raw!==undefined&&String(raw).startsWith('Date(')){
+          obj[c]=String(raw);
+        } else {
+          obj[c]=raw??fmt2??'';
+        }
+      });
+      return obj;
+    }).filter(row=>Object.values(row).some(v=>v!==''&&v!==null));
+  }catch(e){
+    console.warn('fetchSheet failed for '+name+':', e.message);
+    return[];
+  }
+}
+
+async function loadAll(){
+  try {
+    document.getElementById('syncTime').textContent='Loading...';
+    const names=['Projects','IPC Log','NOC Tracker','Stages','Milestones','Activities','Orders','Budget Summary'];
+    const res=await Promise.allSettled(names.map(s=>fetchSheet(s)));
+    res.forEach((r,i)=>{ D[names[i]] = r.status==='fulfilled' ? r.value : []; });
+    document.getElementById('syncTime').textContent='Refreshed '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    buildAll();
+  } catch(e) {
+    document.getElementById('syncTime').textContent='Error - retry';
+    document.getElementById('e-kpis').innerHTML='<div style="padding:20px;color:#dc2626;font-size:12px">Failed to load data. Check sheet is public. <button onclick="loadAll()" style="margin-left:8px;padding:4px 10px;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer">Retry</button></div>';
+    console.error('loadAll error:', e);
+  }
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function go(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab,.mnav-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function gotoProject(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab,.mnav-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-project').classList.add('active');
+  document.getElementById('proj-select').value=name;
+  buildProject();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleTV(){document.body.classList.toggle('tv-mode');}
+
+// ═══════════════════════════════════════════
+// CHART HELPERS
+// ═══════════════════════════════════════════
+function makeDonut(id,labels,data,colors){
+  if(CHARTS[id])CHARTS[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  CHARTS[id]=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:1,borderColor:colors.map(()=>'rgba(255,255,255,.8)')}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:9,padding:10,font:{size:11}}}}}});
+}
+function makeBar(id,labels,datasets,opts={}){
+  if(CHARTS[id])CHARTS[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  CHARTS[id]=new Chart(ctx,{type:'bar',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:datasets.length>1,labels:{boxWidth:9,padding:8,font:{size:10}}}},scales:{x:{ticks:{font:{size:9},maxRotation:30},grid:{color:'rgba(0,0,0,.05)'}},y:{ticks:{font:{size:9},callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,.05)'},...(opts.y||{})}}}});
+}
+function makeHBar(id,labels,data,colors){
+  if(CHARTS[id])CHARTS[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  CHARTS[id]=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:3,borderWidth:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.05)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}}});
+}
+
+// ═══════════════════════════════════════════
+// TABLE HELPER
+// ═══════════════════════════════════════════
+function tbl(heads, rows){
+  return `<thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):
+  `<tr><td colspan="${heads.length}" class="empty">No data</td></tr>`}</tbody>`;
+}
+
+// ═══════════════════════════════════════════
+// SHOW MORE HELPER
+// ═══════════════════════════════════════════
+const MOBILE_LIMIT = 5;  // items shown initially on mobile
+
+// Renders a mobile card list with show-more/less toggle
+function renderCardList(containerId, allCards, limit) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(allCards.length === 0){
+    el.innerHTML = '<div class="empty">No data</div>';
+    return;
+  }
+  const show = allCards.slice(0, limit);
+  const remaining = allCards.length - limit;
+  let html = show.join('');
+  if(remaining > 0){
+    html += `<button class="show-more-btn" onclick="expandList('${containerId}',this)">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9"/></svg>
+      Show ${remaining} more
+      <span class="item-count-badge">${allCards.length} total</span>
+    </button>`;
+  }
+  el._allCards = allCards;
+  el.innerHTML = html;
+}
+
+function expandList(containerId, btn) {
+  const el = document.getElementById(containerId);
+  if(!el || !el._allCards) return;
+  // Show all
+  el.innerHTML = el._allCards.join('') + 
+    `<button class="show-more-btn" onclick="collapseList('${containerId}',this)">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="18 15 12 9 6 15"/></svg>
+      Show less
+    </button>`;
+  el._allCards_backup = el._allCards;
+}
+
+function collapseList(containerId, btn) {
+  const el = document.getElementById(containerId);
+  if(!el || !el._allCards_backup) return;
+  renderCardList(containerId, el._allCards_backup, MOBILE_LIMIT);
+  el._allCards = el._allCards_backup;
+  // Scroll back to top of container
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ═══════════════════════════════════════════
+// BUILD ALL
+// ═══════════════════════════════════════════
+function buildAll(){buildExec();buildFinance();buildConstruction();buildProcurement();buildNOC();populateProjectSelect();}
+
+// ═══════════════════════════════════════════
+// PAGE 1 — EXECUTIVE
+// ═══════════════════════════════════════════
+function buildExec(){
+  const P=D['Projects']||[],IPC=D['IPC Log']||[],A=D['Activities']||[],O=D['Orders']||[],BS=D['Budget Summary']||[];
+  const real=P.filter(p=>p['Project Name']&&!['null','test','test '].includes(String(p['Project Name']).trim().toLowerCase()));
+
+  const constr=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('construction')).length;
+  const delayed=real.filter(p=>(p['Health Status']||p['Auto Health Flag']||'').toLowerCase().includes('delay')).length;
+  const atRisk=real.filter(p=>(p['Health Status']||p['Auto Health Flag']||'').toLowerCase().includes('risk')).length;
+  const dueWk=IPC.filter(r=>inR(r['Payment Due Date'],WK));
+  const dueMo=IPC.filter(r=>inR(r['Payment Due Date'],MO));
+  const outAmt=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const dueWkAmt=dueWk.reduce((s,r)=>s+n(r['Net Due']),0);
+  const dueMoAmt=dueMo.reduce((s,r)=>s+n(r['Net Due']),0);
+  const castWk=A.filter(a=>a['Is Casting Activity']==='Yes'&&inR(a['Planned Start Date'],WK));
+  const castMo=A.filter(a=>a['Is Casting Activity']==='Yes'&&inR(a['Planned Start Date'],MO));
+  const castMoCost=castMo.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
+  const llCrit=O.filter(o=>o['Long Lead Item']==='Yes'&&(o['Procurement Status']||'').toLowerCase()==='not ordered');
+  const totalCV=BS.reduce((s,b)=>s+n(b['Revised Contract Value']),0);
+
+  document.getElementById('e-kpis').innerHTML=[
+    ['cr','Due This Week',fmt(dueWkAmt),'AED · '+dueWk.length+' IPCs'],
+    ['co','Due This Month',fmt(dueMoAmt),'AED · '+dueMo.length+' IPCs'],
+    ['cb','Total Outstanding',fmt(outAmt),'AED unpaid'],
+    ['co','Castings This Week',castWk.length,fmt(castWk.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0))+' AED'],
+    ['cd','Castings This Month',castMo.length,fmt(castMoCost)+' AED est.'],
+    ['cg','Under Construction',constr,real.length+' total projects'],
+    ['cr','Delayed',delayed,atRisk+' at risk'],
+    ['cb','Portfolio Value',fmt(totalCV),'AED revised'],
+    ['cr','LL Critical',llCrit.length,'not ordered'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
+
+  // Charts
+  setTimeout(()=>{
+    const onTrack=real.filter(p=>(p['Health Status']||p['Auto Health Flag']||'').toLowerCase().includes('track')).length;
+    makeDonut('chart-health',['On Track','At Risk','Delayed','Other'],[onTrack,atRisk,delayed,real.length-onTrack-atRisk-delayed],['#16a34a','#ea580c','#dc2626','#94a3b8']);
+    const paid=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+    const pend=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='pending').reduce((s,r)=>s+n(r['Net Due']),0);
+    const cert=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='certified').reduce((s,r)=>s+n(r['Net Due']),0);
+    makeDonut('chart-payment',['Paid','Pending','Certified'],[Math.round(paid),Math.round(pend),Math.round(cert)],['#16a34a','#dc2626','#2563eb']);
+  },100);
+
+  // Projects — desktop table
+  document.getElementById('e-proj-count').textContent=real.length+' projects';
+  document.getElementById('e-proj-tbl').innerHTML=tbl(
+    ['Project','Emirate','Status','Health','Progress','Delay','Next Milestone'],
+    real.map(p=>`<tr>
+      <td data-proj="${p['Project Name']}" style="cursor:pointer"><div style="font-weight:700;font-size:12px;color:var(--bl)">${p['Project Name']}</div><div class="sm">${p['Building Description']||''}</div></td>
+      <td class="sm">${p['Emirate']||'—'}</td>
+      <td>${badge(p['Project Status'])}</td>
+      <td>${hbadge(p['Health Status'],p['Auto Health Flag'])}</td>
+      <td style="min-width:90px">${bar(p['Overall Progress %'])}</td>
+      <td style="font-family:var(--mn);font-size:10px;color:${n(p['Total Delay'])>0?'var(--red)':'var(--dim)'}">${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+'d':'—'}</td>
+      <td class="sm">${p['Next Milestone']||'—'}</td>
+    </tr>`)
+  );
+
+  // Projects — mobile cards
+  renderCardList('e-proj-cards', real.map(p=>`
+    <div class="mcard" data-proj="${p['Project Name']}" style="cursor:pointer">
+      <div class="mcard-row" style="margin-bottom:4px">
+        <div class="mcard-proj-link">${p['Project Name']}</div>
+        ${hbadge(p['Health Status'],p['Auto Health Flag'])}
+      </div>
+      <div class="mcard-sub">${p['Building Description']||''} · ${p['Emirate']||'—'}</div>
+      <div class="mcard-row">
+        ${badge(p['Project Status'])}
+        <span style="font-size:11px;color:${n(p['Total Delay'])>0?'var(--red)':'var(--dim)'}">
+          ${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+' days delay':'—'}
+        </span>
+      </div>
+      <div class="mcard-bar">
+        <div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-size:11px;font-family:var(--mn);color:var(--dark)">${pct(p['Overall Progress %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(p['Overall Progress %'])}%;background:${bc(p['Overall Progress %'])}"></div></div>
+      </div>
+      <div class="mcard-row" style="margin-top:6px">
+        <span class="mcard-label">Next milestone</span>
+        <span style="font-size:11px;color:var(--dark)">${p['Next Milestone']||'—'}</span>
+      </div>
+    </div>`), MOBILE_LIMIT);
+
+  // Castings
+  const castAll=[...castWk,...castMo.filter(a=>!inR(a['Planned Start Date'],WK))].sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date']));
+  document.getElementById('e-cast-count').textContent=castMo.length+' castings · '+fmt(castMoCost)+' AED';
+  document.getElementById('e-castings').innerHTML=castAll.length?castAll.map(a=>{
+    const cost=n(a['Estimated Concrete Cost (AED)']);
+    const iw=inR(a['Planned Start Date'],WK);
+    return `<div class="ci" style="${iw?'background:#fff7ed':''}">
+      <div>${iw?'<div class="tag-w">THIS WEEK</div>':''}<div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</div><div class="ci-m">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}${a['Assigned Contractor']?' · '+a['Assigned Contractor']:''}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div class="ci-d">${fds(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${cost?`<div class="ci-c">${fmt(cost)} AED</div>`:''}${badge(a['Status'])}</div>
+    </div>`;
+  }).join(''):'<div class="empty">No castings this month</div>';
+
+  // Activities this week
+  const actsWk=A.filter(a=>a['Is Casting Activity']!=='Yes'&&inR(a['Planned Start Date'],WK));
+  document.getElementById('e-act-count').textContent=actsWk.length+' activities';
+  document.getElementById('e-act-tbl').innerHTML=tbl(
+    ['Project','Activity','Stage','Contractor','Start','Status'],
+    actsWk.map(a=>`<tr><td class="sm">${a['Project Name']||'—'}</td><td style="font-weight:600">${a['Activity Name']||'—'}</td><td class="sm">${a['Stage Label']||'—'}</td><td class="sm">${a['Assigned Contractor']||'—'}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td><td>${badge(a['Status'])}</td></tr>`)
+  );
+  renderCardList('e-act-cards', actsWk.length?actsWk.map(a=>`
+    <div class="mcard">
+      <div class="mcard-row"><span class="mcard-proj-link">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div>
+      <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Contractor</div><div class="mcard-item-val">${a['Assigned Contractor']||'—'}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Start Date</div><div class="mcard-item-val">${fds(a['Planned Start Date'])}</div></div>
+      </div>
+    </div>`).join(''):'<div class="empty">No activities this week</div>';
+
+  // Long lead
+  document.getElementById('e-ll-count').textContent=llCrit.length+' items';
+  document.getElementById('e-ll-tbl').innerHTML=tbl(
+    ['Project','Item','Lead Time','Order By'],
+    llCrit.map(o=>`<tr><td class="sm">${o['Project Name']||'—'}</td><td style="font-weight:600">${o['Order Description']||'—'}</td><td class="sm">${o['Lead Time']||'—'} wks</td><td style="font-family:var(--mn);font-size:10px;color:var(--red)">${fd(o['Order By Date'])}</td></tr>`)
+  );
+  renderCardList('e-ll-cards', llCrit.length?llCrit.map(o=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span><span class="badge br">ACTION</span></div>
+      <div class="mcard-sub">${o['Project Name']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Lead Time</div><div class="mcard-item-val">${o['Lead Time']||'—'} wks</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val" style="color:var(--red)">${fd(o['Order By Date'])}</div></div>
+      </div>
+    </div>`).join(''):'<div class="empty">No critical items</div>';
+}
+
+// ═══════════════════════════════════════════
+// PAGE 2 — FINANCE
+// ═══════════════════════════════════════════
+function buildFinance(){
+  const IPC=D['IPC Log']||[],BS=D['Budget Summary']||[];
+  const totalCV=BS.reduce((s,b)=>s+n(b['Revised Contract Value']),0);
+  const totalPaid=BS.reduce((s,b)=>s+n(b['Total IPC Paid']),0);
+  const totalBal=BS.reduce((s,b)=>s+n(b['Balance Remaining']),0);
+  const dueWkAmt=IPC.filter(r=>inR(r['Payment Due Date'],WK)).reduce((s,r)=>s+n(r['Net Due']),0);
+  const dueMoAmt=IPC.filter(r=>inR(r['Payment Due Date'],MO)).reduce((s,r)=>s+n(r['Net Due']),0);
+  const totalPend=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='pending').reduce((s,r)=>s+n(r['Net Due']),0);
+  const totalCert=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='certified').reduce((s,r)=>s+n(r['Net Due']),0);
+
+  document.getElementById('f-kpis').innerHTML=[
+    ['cb','Portfolio Value',fmt(totalCV),'AED revised'],
+    ['cg','Total Paid',fmt(totalPaid),'AED'],
+    ['co','Balance Remaining',fmt(totalBal),'AED'],
+    ['cr','Due This Week',fmt(dueWkAmt),'AED'],
+    ['co','Due This Month',fmt(dueMoAmt),'AED'],
+    ['cr','Pending Payment',fmt(totalPend),'AED'],
+    ['cb','Certified',fmt(totalCert),'AED'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`:[]:[]), MOBILE_LIMIT);
+
+  const bData=BS.filter(b=>b['Project Name']&&b['Project Name']!=='null');
+
+  // Budget table
+  document.getElementById('f-budget-tbl').innerHTML=tbl(
+    ['Project','Status','Contract','Certified','Paid','Balance','Progress'],
+    bData.map(b=>`<tr>
+      <td style="font-weight:700">${b['Project Name']}</td>
+      <td>${badge(b['Project Status'])}</td>
+      <td class="n sm">${fmt(b['Revised Contract Value'])} AED</td>
+      <td class="n sm" style="color:var(--bl)">${fmt(b['Total IPC Certified'])} AED</td>
+      <td class="n sm" style="color:var(--gn)">${fmt(b['Total IPC Paid'])} AED</td>
+      <td class="n sm" style="color:var(--og)">${fmt(b['Balance Remaining'])} AED</td>
+      <td>${bar(b['Financial Progress %'])}</td>
+    </tr>`)
+  );
+  // Budget mobile cards
+  renderCardList('f-budget-cards', bData.map(b=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${b['Project Name']}</span>${badge(b['Project Status'])}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Contract</div><div class="mcard-item-val">${fmt(b['Revised Contract Value'])} AED</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Paid</div><div class="mcard-item-val" style="color:var(--gn)">${fmt(b['Total IPC Paid'])} AED</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Certified</div><div class="mcard-item-val" style="color:var(--bl)">${fmt(b['Total IPC Certified'])} AED</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Balance</div><div class="mcard-item-val" style="color:var(--og)">${fmt(b['Balance Remaining'])} AED</div></div>
+      </div>
+      <div class="mcard-bar" style="margin-top:8px">
+        <div class="mcard-bar-top"><span class="mcard-label">Financial Progress</span><span style="font-size:11px;font-family:var(--mn)">${pct(b['Financial Progress %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(b['Financial Progress %'])}%;background:${bc(b['Financial Progress %'])}"></div></div>
+      </div>
+    </div>`), MOBILE_LIMIT);
+
+  // Bar chart
+  setTimeout(()=>{
+    makeBar('chart-budget-bar',bData.slice(0,8).map(b=>b['Project Name'].substring(0,10)),[
+      {label:'Contract',data:bData.slice(0,8).map(b=>n(b['Revised Contract Value'])),backgroundColor:'rgba(37,99,235,.6)',borderRadius:3},
+      {label:'Paid',data:bData.slice(0,8).map(b=>n(b['Total IPC Paid'])),backgroundColor:'rgba(22,163,74,.6)',borderRadius:3},
+    ]);
+  },100);
+
+  // Upcoming payments
+  const upcoming=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').sort((a,b)=>parseDate(a['Payment Due Date'])-parseDate(b['Payment Due Date']));
+  document.getElementById('f-upcoming-count').textContent=upcoming.length+' pending';
+  document.getElementById('f-upcoming-tbl').innerHTML=tbl(
+    ['Project','IPC','Due','Status','Net Due'],
+    upcoming.map(r=>{
+      const iw=inR(r['Payment Due Date'],WK),im=inR(r['Payment Due Date'],MO);
+      return `<tr style="${iw?'background:#fff7ed':''}">
+        <td style="font-weight:600">${r['Project Name']||'—'}</td>
+        <td class="sm">${r['IPC Number']||'—'}</td>
+        <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}${iw?'<br><span class="badge br" style="font-size:8px">WEEK</span>':im?'<br><span class="badge bo" style="font-size:8px">MONTH</span>':''}</td>
+        <td>${badge(r['Payment Status'])}</td>
+        <td class="n" style="font-weight:700;font-family:var(--mn);color:var(--red)">${fmtAED(r['Net Due'])}</td>
+      </tr>`;})
+  );
+  renderCardList('f-upcoming-cards', upcoming.map(r=>` 
+    <div class="mcard" style="${inR(r['Payment Due Date'],WK)?'border-left:3px solid var(--red);':''}">
+      <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${r['Project Name']||'—'}</span>${badge(r['Payment Status'])}</div>
+      <div class="mcard-row" style="margin-top:6px">
+        <span class="mcard-label">${r['IPC Number']||'—'} · Due ${fd(r['Payment Due Date'])}</span>
+        <span style="font-weight:700;font-family:var(--mn);color:var(--red);font-size:13px">${fmtAED(r['Net Due'])}</span>
+      </div>
+    </div>`), MOBILE_LIMIT);
+
+  // IPC log
+  const all=IPC.filter(r=>r['IPC Number']&&r['IPC Number']!=='null').sort((a,b)=>parseDate(b['Payment Due Date'])-parseDate(a['Payment Due Date']));
+  document.getElementById('f-ipc-count').textContent=all.length+' IPCs';
+  document.getElementById('f-ipc-tbl').innerHTML=tbl(
+    ['Project','IPC','Work Covered','Due Date','Paid Date','Status','Net Due'],
+    all.map(r=>`<tr>
+      <td style="font-weight:600">${r['Project Name']||'—'}</td>
+      <td style="font-family:var(--mn);font-size:10px">${r['IPC Number']||'—'}</td>
+      <td class="sm" style="max-width:180px">${String(r['Work Covered']||'—').substring(0,55)}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(r['Actual Payment Date'])}</td>
+      <td>${badge(r['Payment Status'])}</td>
+      <td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td>
+    </tr>`)
+  );
+  renderCardList('f-ipc-cards', all.map(r=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${r['Project Name']||'—'} — ${r['IPC Number']||'—'}</span>${badge(r['Payment Status'])}</div>
+      <div class="mcard-sub">${String(r['Work Covered']||'').substring(0,60)}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Due Date</div><div class="mcard-item-val">${fd(r['Payment Due Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Net Due</div><div class="mcard-item-val" style="color:var(--red)">${fmtAED(r['Net Due'])}</div></div>
+      </div>
+    </div>`), MOBILE_LIMIT);
+}
+
+// ═══════════════════════════════════════════
+// PAGE 3 — CONSTRUCTION
+// ═══════════════════════════════════════════
+function buildConstruction(){
+  const S=D['Stages']||[],M=D['Milestones']||[],A=D['Activities']||[];
+  const inProg=S.filter(s=>(s['Status']||'').toLowerCase().includes('progress')).length;
+  const comp=S.filter(s=>(s['Status']||'').toLowerCase().includes('complet')).length;
+  const castMo=A.filter(a=>a['Is Casting Activity']==='Yes'&&inR(a['Planned Start Date'],MO));
+  const castMoCost=castMo.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
+  const delM=M.filter(m=>n(m['Variance Days'])>0).length;
+
+  document.getElementById('c-kpis').innerHTML=[
+    ['cg','In Progress',inProg,'stages active'],
+    ['cb','Complete',comp,'stages done'],
+    ['cr','Delayed Milestones',delM,'variance > 0'],
+    ['co','Castings This Month',castMo.length,'pours planned'],
+    ['cd','Casting Cost',fmt(castMoCost),'AED estimated'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
+
+  // Castings
+  const castAll=A.filter(a=>a['Is Casting Activity']==='Yes').sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date']));
+  document.getElementById('c-cast-count').textContent=castAll.length+' total';
+  document.getElementById('c-cast-tbl').innerHTML=tbl(
+    ['Project','Element','Stage','Contractor','Planned Date','Volume','Est. Cost','Status'],
+    castAll.map(a=>`<tr>
+      <td class="sm">${a['Project Name']||'—'}</td>
+      <td style="font-weight:700">${a['Cast Element']||a['Activity Name']||'—'}</td>
+      <td class="sm">${a['Stage Label']||'—'}</td>
+      <td class="sm">${a['Assigned Contractor']||'—'}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(a['Planned Start Date'])}</td>
+      <td class="n sm">${a['Concrete Volume']||'—'}</td>
+      <td class="n" style="color:var(--gd);font-family:var(--mn);font-size:11px">${n(a['Estimated Concrete Cost (AED)'])?fmtAED(a['Estimated Concrete Cost (AED)']):n(a['Estimated Cost (AED)'])?fmtAED(a['Estimated Cost (AED)']):'-'}</td>
+      <td>${badge(a['Status'])}</td>
+    </tr>`)
+  );
+  renderCardList('c-cast-cards', castAll.length?castAll.map(a=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</span>${badge(a['Status'])}</div>
+      <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Date</div><div class="mcard-item-val">${fd(a['Planned Start Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Volume</div><div class="mcard-item-val">${a['Concrete Volume']||'—'} m³</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Contractor</div><div class="mcard-item-val">${a['Assigned Contractor']||'—'}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Est. Cost</div><div class="mcard-item-val" style="color:var(--gd)">${n(a['Estimated Concrete Cost (AED)'])?fmt(n(a['Estimated Concrete Cost (AED)']))+' AED':'—'}</div></div>
+      </div>
+    </div>`).join(''):'<div class="empty">No castings</div>';
+
+  // Stages
+  const sData=S.filter(s=>s['Project Name']&&s['Project Name']!=='null');
+  document.getElementById('c-stage-count').textContent=sData.length;
+  document.getElementById('c-stage-tbl').innerHTML=tbl(
+    ['Project','Stage','Status','Completion','Forecast End'],
+    sData.map(s=>`<tr>
+      <td class="sm">${s['Project Name']||'—'}</td>
+      <td style="font-weight:700">${s['Stage Label']||'—'}</td>
+      <td>${badge(s['Status'])}</td>
+      <td>${bar(s['Stage Completion %'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td>
+    </tr>`)
+  );
+  renderCardList('c-stage-cards', sData.map(s=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${s['Stage Label']||'—'}</span>${badge(s['Status'])}</div>
+      <div class="mcard-sub">${s['Project Name']||'—'}</div>
+      <div class="mcard-bar" style="margin-top:6px">
+        <div class="mcard-bar-top"><span class="mcard-label">Completion</span><span style="font-size:11px;font-family:var(--mn)">${pct(s['Stage Completion %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(s['Stage Completion %'])}%;background:${bc(s['Stage Completion %'])}"></div></div>
+      </div>
+    </div>`:[]), MOBILE_LIMIT);
+
+  setTimeout(()=>{
+    const sd=sData.filter(s=>n(s['Stage Completion %'])>0).slice(0,10);
+    makeHBar('chart-stages',sd.map(s=>(s['Stage Label']||'').substring(0,18)),sd.map(s=>pct(s['Stage Completion %'])),sd.map(s=>bc(s['Stage Completion %'])));
+  },100);
+
+  // Milestones
+  const mData=M.filter(m=>m['Project Name']&&m['Project Name']!=='null');
+  document.getElementById('c-mile-count').textContent=mData.length;
+  document.getElementById('c-mile-tbl').innerHTML=tbl(
+    ['Project','Milestone','Stage','Status','Planned End','Variance'],
+    mData.map(m=>{const v=n(m['Variance Days']);return`<tr>
+      <td class="sm">${m['Project Name']||'—'}</td>
+      <td style="font-weight:700">${m['Milestone Label']||'—'}</td>
+      <td class="sm">${m['Stage Label']||'—'}</td>
+      <td>${badge(m['Status'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v:v||'—'} days</td>
+    </tr>`})
+  );
+  renderCardList('c-mile-cards', mData.map(m=>{const v=n(m['Variance Days']);return`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${m['Milestone Label']||'—'}</span>${badge(m['Status'])}</div>
+      <div class="mcard-sub">${m['Project Name']||'—'} · ${m['Stage Label']||'—'}</div>
+      <div class="mcard-row" style="margin-top:6px">
+        <span class="mcard-label">Planned End: ${fd(m['Planned End Date'])}</span>
+        <span style="font-size:11px;font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v+'d':v<0?v+'d':'On time'}</span>
+      </div>
+    </div>`}), MOBILE_LIMIT);
+
+  // Activities
+  const allA=A.filter(a=>a['Is Casting Activity']!=='Yes');
+  document.getElementById('c-act-count').textContent=allA.length;
+  document.getElementById('c-act-tbl').innerHTML=tbl(
+    ['Project','Activity','Stage','Contractor','Start','End','Progress','Status'],
+    allA.map(a=>`<tr>
+      <td class="sm">${a['Project Name']||'—'}</td>
+      <td style="font-weight:600">${a['Activity Name']||'—'}</td>
+      <td class="sm">${a['Stage Label']||'—'}</td>
+      <td class="sm">${a['Assigned Contractor']||'—'}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned End Date'])}</td>
+      <td>${bar(a['Progress %'],55)}</td>
+      <td>${badge(a['Status'])}</td>
+    </tr>`)
+  );
+  renderCardList('c-act-cards', allA.map(a=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div>
+      <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Start</div><div class="mcard-item-val">${fds(a['Planned Start Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Contractor</div><div class="mcard-item-val">${a['Assigned Contractor']||'—'}</div></div>
+      </div>
+      <div class="mcard-bar" style="margin-top:6px">
+        <div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-size:11px;font-family:var(--mn)">${pct(a['Progress %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(a['Progress %'])}%;background:${bc(a['Progress %'])}"></div></div>
+      </div>
+    </div>`), MOBILE_LIMIT);
+}
+
+// ═══════════════════════════════════════════
+// PAGE 4 — PROCUREMENT
+// ═══════════════════════════════════════════
+function buildProcurement(){
+  const O=D['Orders']||[];
+  const ll=O.filter(o=>o['Long Lead Item']==='Yes');
+  const notOrd=O.filter(o=>(o['Procurement Status']||'').toLowerCase()==='not ordered'||(o['Procurement Status']||'')==='');
+  const lpoOrd=O.filter(o=>(o['Procurement Status']||'').toLowerCase().includes('lpo'));
+  const deliv=O.filter(o=>o['Fully Delivered']==='Yes'||(o['Procurement Status']||'').toLowerCase().includes('deliver'));
+  const totalAll=O.reduce((s,o)=>s+n(o['LPO Value']),0);
+
+  document.getElementById('pr-kpis').innerHTML=[
+    ['cb','Total Order Value',fmt(totalAll),'AED committed'],
+    ['cb','LPO Issued',lpoOrd.length,fmt(lpoOrd.reduce((s,o)=>s+n(o['LPO Value']),0))+' AED'],
+    ['cg','Delivered',deliv.length,'complete'],
+    ['co','Pending Delivery',O.length-deliv.length,'in process'],
+    ['cr','Not Ordered',notOrd.length,'action needed'],
+    ['cr','LL Critical',ll.filter(o=>(o['Procurement Status']||'').toLowerCase()==='not ordered').length,'not ordered'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
+
+  setTimeout(()=>{
+    const statuses={};O.forEach(o=>{const s=o['Procurement Status']||'Unknown';statuses[s]=(statuses[s]||0)+1;});
+    const cols=['#2563eb','#16a34a','#ea580c','#dc2626','#7c3aed','#94a3b8'];
+    makeDonut('chart-orders',Object.keys(statuses),Object.values(statuses),cols.slice(0,Object.keys(statuses).length));
+  },100);
+
+  document.getElementById('pr-ll-count').textContent=ll.length+' items';
+  document.getElementById('pr-ll-tbl').innerHTML=tbl(
+    ['Project','Item','Lead Time','Order By','On Site','Status','LPO Value'],
+    ll.sort((a,b)=>parseDate(a['Order By Date'])-parseDate(b['Order By Date'])).map(o=>{
+      const notO=(o['Procurement Status']||'').toLowerCase()==='not ordered';
+      return`<tr style="${notO?'background:#fff7ed':''}">
+        <td class="sm">${o['Project Name']||'—'}</td>
+        <td style="font-weight:700">${o['Order Description']||'—'}${notO?'<span class="tag-ll">ACTION</span>':''}</td>
+        <td class="sm">${o['Lead Time']||'—'} wks</td>
+        <td style="font-family:var(--mn);font-size:10px;color:var(--red)">${fd(o['Order By Date'])}</td>
+        <td style="font-family:var(--mn);font-size:10px">${fd(o['Required On Site Date'])}</td>
+        <td>${badge(o['Procurement Status'])}</td>
+        <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
+      </tr>`;})
+  );
+  renderCardList('pr-ll-cards', ll.length?ll.map(o=>{
+    const notO=(o['Procurement Status']||'').toLowerCase()==='not ordered';
+    return`<div class="mcard" style="${notO?'border-left:3px solid var(--red);':''}">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span>${badge(o['Procurement Status'])}</div>
+      <div class="mcard-sub">${o['Project Name']||'—'} · ${o['Lead Time']||'—'} weeks lead time</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val" style="color:var(--red)">${fd(o['Order By Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">LPO Value</div><div class="mcard-item-val" style="color:var(--gd)">${fmtAED(o['LPO Value'])}</div></div>
+      </div>
+    </div>`}).join(''):'<div class="empty">No long lead orders</div>';
+
+  document.getElementById('pr-all-count').textContent=O.length+' · '+fmtAED(totalAll);
+  document.getElementById('pr-all-tbl').innerHTML=tbl(
+    ['Project','Description','Category','Order By','Expected Delivery','Delivered?','Status','LPO'],
+    O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`<tr>
+      <td class="sm">${o['Project Name']||'—'}</td>
+      <td style="font-weight:600">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td>
+      <td class="sm">${o['Category']||'—'}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(o['Order By Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(o['Expected Delivery Date'])}</td>
+      <td>${badge(o['Fully Delivered']==='Yes'?'Yes':'Pending')}</td>
+      <td>${badge(o['Procurement Status'])}</td>
+      <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
+    </tr>`)
+  );
+  renderCardList('pr-all-cards', O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</span>${badge(o['Procurement Status'])}</div>
+      <div class="mcard-sub">${o['Project Name']||'—'}${o['Category']?' · '+o['Category']:''}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val">${fd(o['Order By Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">LPO Value</div><div class="mcard-item-val" style="color:var(--gd)">${fmtAED(o['LPO Value'])}</div></div>
+      </div>
+    </div>`:[]), MOBILE_LIMIT);
+}
+
+// ═══════════════════════════════════════════
+// PAGE 5 — NOC
+// ═══════════════════════════════════════════
+function buildNOC(){
+  const N=D['NOC Tracker']||[];
+  const appr=N.filter(n=>(n['Current Status']||'').toLowerCase()==='approved').length;
+  const pend=N.filter(n=>{const s=(n['Current Status']||'').toLowerCase();return s.includes('pending')||s.includes('progress')||s.includes('review');}).length;
+  const exp30=N.filter(n=>{if(!n['Expiry Date'])return false;const d=parseDate(n['Expiry Date']),now=new Date(),e=new Date();e.setDate(e.getDate()+30);return d>=now&&d<=e;});
+
+  document.getElementById('n-kpis').innerHTML=[
+    ['cg','Approved NOCs',appr,'active'],
+    ['co','Pending / In Progress',pend,'awaiting'],
+    ['cr','Expiring (30 days)',exp30.length,'renew urgently'],
+    ['cb','Total NOCs',N.length,'tracked'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
+
+  setTimeout(()=>{
+    const s={};N.forEach(n=>{const v=n['Current Status']||'Unknown';s[v]=(s[v]||0)+1;});
+    makeDonut('chart-noc',Object.keys(s),Object.values(s),['#16a34a','#ea580c','#2563eb','#dc2626','#94a3b8'].slice(0,Object.keys(s).length));
+  },100);
+
+  document.getElementById('n-noc-count').textContent=N.length+' NOCs';
+  const nData=N.filter(n=>n['Project Name']&&n['Project Name']!=='null');
+  document.getElementById('n-noc-tbl').innerHTML=tbl(
+    ['Project','Authority','NOC Type','Status','Submitted','Expected','Expiry','Days Left','Assigned'],
+    nData.map(n=>{const days=parseInt(n['Days to Expiry']);const dc=isNaN(days)?'var(--dim)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';return`<tr>
+      <td class="sm">${n['Project Name']||'—'}</td>
+      <td class="sm">${n['Authority Name']||'—'}</td>
+      <td style="font-weight:700">${n['NOC Type']||'—'}</td>
+      <td>${badge(n['Current Status'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Submission Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Expected Approval Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${dc}">${isNaN(days)?'—':days+' days'}</td>
+      <td class="sm">${n['Assigned To']||'—'}</td>
+    </tr>`})
+  );
+  renderCardList('n-noc-cards', nData.map(n=>{const days=parseInt(n['Days to Expiry']);const dc=isNaN(days)?'var(--dim)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';return`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${n['NOC Type']||'—'}</span>${badge(n['Current Status'])}</div>
+      <div class="mcard-sub">${n['Project Name']||'—'} · ${n['Authority Name']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Submitted</div><div class="mcard-item-val">${fd(n['Submission Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Expiry</div><div class="mcard-item-val" style="color:${dc}">${fd(n['Expiry Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Days Left</div><div class="mcard-item-val" style="color:${dc}">${isNaN(days)?'—':days+' days'}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Assigned</div><div class="mcard-item-val">${n['Assigned To']||'—'}</div></div>
+      </div>
+    </div>`}), MOBILE_LIMIT);
+}
+
+// ═══════════════════════════════════════════
+// PAGE 6 — PROJECT DETAIL
+// ═══════════════════════════════════════════
+function populateProjectSelect(){
+  const P=D['Projects']||[];
+  const sel=document.getElementById('proj-select');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Choose a project —</option>';
+  P.filter(p=>p['Project Name']&&!['null','test','test '].includes(String(p['Project Name']).trim().toLowerCase()))
+   .sort((a,b)=>String(a['Project Name']).localeCompare(String(b['Project Name'])))
+   .forEach(p=>{const o=document.createElement('option');o.value=p['Project Name'];o.textContent=p['Project Name']+(p['Project Status']?' — '+p['Project Status']:'');sel.appendChild(o);});
+  if(cur) sel.value=cur;
+}
+
+function buildProject(){
+  const name=document.getElementById('proj-select').value;
+  document.getElementById('proj-header').style.display=name?'block':'none';
+  document.getElementById('proj-empty').style.display=name?'none':'block';
+  if(!name) return;
+
+  const P=D['Projects']||[],S=D['Stages']||[],M=D['Milestones']||[],A=D['Activities']||[];
+  const O=D['Orders']||[],N=D['NOC Tracker']||[],IPC=D['IPC Log']||[],BS=D['Budget Summary']||[];
+
+  const proj=P.find(p=>p['Project Name']===name)||{};
+  const stages=S.filter(s=>s['Project Name']===name);
+  const miles=M.filter(m=>m['Project Name']===name);
+  const acts=A.filter(a=>a['Project Name']===name);
+  const orders=O.filter(o=>o['Project Name']===name);
+  const nocs=N.filter(n=>n['Project Name']===name);
+  const ipcs=IPC.filter(r=>r['Project Name']===name);
+  const budget=BS.find(b=>b['Project Name']===name)||{};
+  const castings=acts.filter(a=>a['Is Casting Activity']==='Yes');
+  const nonCast=acts.filter(a=>a['Is Casting Activity']!=='Yes');
+
+  document.getElementById('proj-health').innerHTML=hbadge(proj['Health Status'],proj['Auto Health Flag']);
+
+  // Info banner
+  document.getElementById('proj-info').innerHTML=`
+    <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:20px">
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:20px;font-weight:800;color:var(--dark);letter-spacing:-.5px">${name}</div>
+        <div style="font-size:12px;color:var(--dim);margin-top:3px">${proj['Building Description']||''} · ${proj['Zone / Area']||''} · ${proj['Emirate']||'—'}</div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${badge(proj['Project Status'])} ${hbadge(proj['Health Status'],proj['Auto Health Flag'])}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:2;min-width:260px">
+        ${[['Developer',proj['Developer']],['Main Contractor',proj['Main Contractor']],['Project Manager',proj['Project Manager']],['Planned Start',fd(proj['Planned Start Date'])],['Planned Completion',fd(proj['Planned Completion Date'])],['Total Delay',n(proj['Total Delay'])>0?'+'+n(proj['Total Delay'])+' days':'On schedule']].map(([l,v])=>`
+        <div><div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px">${l}</div><div style="font-size:12px;color:var(--text);margin-top:2px">${v||'—'}</div></div>`).join('')}
+      </div>
+    </div>`;
+
+  // KPIs
+  const totalPaid=ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()==='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const outstanding=ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const castCost=castings.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
+  document.getElementById('proj-kpis').innerHTML=[
+    ['cb','Contract',fmt(budget['Revised Contract Value']),'AED'],
+    ['cg','Paid',fmt(totalPaid),'AED'],
+    ['cr','Outstanding',fmt(outstanding),'AED'],
+    ['cg','Stages Done',stages.filter(s=>(s['Status']||'').toLowerCase().includes('complet')).length+'/'+stages.length,'stages'],
+    ['cr','Delayed Milestones',miles.filter(m=>n(m['Variance Days'])>0).length,'milestones'],
+    ['co','Castings',castings.length,fmt(castCost)+' AED est.'],
+    ['cb','NOCs',nocs.length,nocs.filter(n=>(n['Current Status']||'').toLowerCase()==='approved').length+' approved'],
+    ['co','Orders',orders.length,fmt(orders.reduce((s,o)=>s+n(o['LPO Value']),0))+' AED'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.04}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
+
+  // Budget
+  document.getElementById('proj-budget').innerHTML=`
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget</span></div>
+    <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    ${[['Original Contract',budget['Original Contract Value'],'var(--text)'],['Approved Variations',budget['Approved Variations'],'var(--og)'],['Revised Contract',budget['Revised Contract Value'],'var(--bl)'],['Total Certified',budget['Total IPC Certified'],'var(--tl)'],['Total Paid',budget['Total IPC Paid'],'var(--gn)'],['Balance Remaining',budget['Balance Remaining'],'var(--og)'],].map(([l,v,c])=>`
+      <div style="background:#f8fafd;border:1px solid var(--border);border-radius:6px;padding:9px 11px">
+        <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px">${l}</div>
+        <div style="font-size:14px;font-weight:700;font-family:var(--mn);color:${c};margin-top:3px">${fmtAED(v)}</div>
+      </div>`).join('')}
+    <div style="grid-column:1/-1;background:#f8fafd;border:1px solid var(--border);border-radius:6px;padding:9px 11px">
+      <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px">Financial Progress</div>
+      ${bar(budget['Financial Progress %'],200)}
+    </div></div>`;
+
+  // Castings
+  document.getElementById('proj-castings').innerHTML=`
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Castings</span><span class="cc">${castings.length}</span></div>
+    ${castings.length?castings.sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date'])).map(a=>`
+    <div class="ci">
+      <div><div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab'}</div><div class="ci-m">${a['Stage Label']||'—'} · ${a['Assigned Contractor']||'—'}</div></div>
+      <div style="text-align:right"><div class="ci-d">${fd(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${n(a['Estimated Concrete Cost (AED)'])?`<div class="ci-c">${fmt(n(a['Estimated Concrete Cost (AED)']))} AED</div>`:''}${badge(a['Status'])}</div>
+    </div>`).join(''):'<div class="empty">No castings</div>'}`;
+
+  // Stages, milestones, activities, orders, NOCs, IPC
+  const simpleCard=(id,title,color,headers,rows,mobileCards)=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML=`
+      <div class="ch"><span class="ct"><span class="dc" style="background:${color}"></span>${title}</span><span class="cc">${rows.length}</span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl">${tbl(headers,rows)}</table></div></div>
+      <div class="mlist" id="${id}-cards"></div>`;
+    if(mobileCards){
+      // Accept both array and pre-joined string
+      const cards = Array.isArray(mobileCards) ? mobileCards : 
+        mobileCards.split('</div><div class="mcard"').map((c,i)=>i===0?c:('<div class="mcard"'+c)).filter(c=>c.trim());
+      renderCardList(id+'-cards', cards, MOBILE_LIMIT);
+    }
+  };
+
+  simpleCard('proj-stages','Stages','var(--gn)',
+    ['Stage','Status','Completion','Forecast End','Gate'],
+    stages.map(s=>`<tr><td style="font-weight:700">${s['Stage Label']||'—'}</td><td>${badge(s['Status'])}</td><td>${bar(s['Stage Completion %'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td><td>${badge(s['Gate Status'])}</td></tr>`),
+    stages.map(s=>`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${s['Stage Label']||'—'}</span>${badge(s['Status'])}</div><div class="mcard-bar" style="margin-top:6px"><div class="mcard-bar-top"><span class="mcard-label">Completion</span><span style="font-size:11px;font-family:var(--mn)">${pct(s['Stage Completion %']).toFixed(0)}%</span></div><div class="pw"><div class="pb" style="width:${pct(s['Stage Completion %'])}%;background:${bc(s['Stage Completion %'])}"></div></div></div></div>`).join('')
+  );
+
+  simpleCard('proj-milestones','Milestones','var(--tl)',
+    ['Milestone','Stage','Status','Planned End','Variance'],
+    miles.map(m=>{const v=n(m['Variance Days']);return`<tr><td style="font-weight:700">${m['Milestone Label']||'—'}</td><td class="sm">${m['Stage Label']||'—'}</td><td>${badge(m['Status'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td><td style="font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v:v||'—'} days</td></tr>`}),
+    miles.map(m=>{const v=n(m['Variance Days']);return`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${m['Milestone Label']||'—'}</span>${badge(m['Status'])}</div><div class="mcard-sub">${m['Stage Label']||'—'} · Due ${fd(m['Planned End Date'])}</div><div class="mcard-row" style="margin-top:4px"><span class="mcard-label">Variance</span><span style="font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v+'d':v<0?v+'d':'On time'}</span></div></div>`}).join('')
+  );
+
+  simpleCard('proj-activities','Activities','var(--pu)',
+    ['Activity','Stage','Contractor','Start','End','Progress','Status'],
+    nonCast.map(a=>`<tr><td style="font-weight:600">${a['Activity Name']||'—'}</td><td class="sm">${a['Stage Label']||'—'}</td><td class="sm">${a['Assigned Contractor']||'—'}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned End Date'])}</td><td>${bar(a['Progress %'],55)}</td><td>${badge(a['Status'])}</td></tr>`),
+    nonCast.map(a=>`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div><div class="mcard-sub">${a['Stage Label']||'—'} · ${a['Assigned Contractor']||'—'}</div><div class="mcard-bar" style="margin-top:6px"><div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-family:var(--mn);font-size:11px">${pct(a['Progress %']).toFixed(0)}%</span></div><div class="pw"><div class="pb" style="width:${pct(a['Progress %'])}%;background:${bc(a['Progress %'])}"></div></div></div></div>`).join('')
+  );
+
+  simpleCard('proj-orders','Orders','var(--pu)',
+    ['Description','Status','Order By','Delivery','LPO'],
+    orders.map(o=>`<tr><td style="font-weight:600">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td><td>${badge(o['Procurement Status'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(o['Order By Date'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(o['Expected Delivery Date'])}</td><td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td></tr>`),
+    orders.map(o=>`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span>${badge(o['Procurement Status'])}</div><div class="mcard-row" style="margin-top:6px"><span class="mcard-label">Order By ${fd(o['Order By Date'])}</span><span style="font-weight:700;font-family:var(--mn);color:var(--gd)">${fmtAED(o['LPO Value'])}</span></div></div>`).join('')
+  );
+
+  simpleCard('proj-nocs','NOCs','var(--tl)',
+    ['NOC Type','Authority','Status','Expiry','Days Left'],
+    nocs.map(n=>{const d=parseInt(n['Days to Expiry']);const c=isNaN(d)?'var(--dim)':d<30?'var(--red)':d<90?'var(--og)':'var(--gn)';return`<tr><td style="font-weight:700">${n['NOC Type']||'—'}</td><td class="sm">${n['Authority Name']||'—'}</td><td>${badge(n['Current Status'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td><td style="font-family:var(--mn);font-size:11px;color:${c}">${isNaN(d)?'—':d+' days'}</td></tr>`}),
+    nocs.map(n=>{const d=parseInt(n['Days to Expiry']);const c=isNaN(d)?'var(--dim)':d<30?'var(--red)':d<90?'var(--og)':'var(--gn)';return`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${n['NOC Type']||'—'}</span>${badge(n['Current Status'])}</div><div class="mcard-sub">${n['Authority Name']||'—'} · Expiry ${fd(n['Expiry Date'])}</div><div class="mcard-row" style="margin-top:4px"><span class="mcard-label">Days to Expiry</span><span style="font-family:var(--mn);color:${c}">${isNaN(d)?'—':d+' days'}</span></div></div>`}).join('')
+  );
+
+  simpleCard('proj-ipc','IPC Payment Log','var(--red)',
+    ['IPC No','Work Covered','Due Date','Paid Date','Status','Net Due'],
+    ipcs.sort((a,b)=>parseDate(b['Payment Due Date'])-parseDate(a['Payment Due Date'])).map(r=>`<tr><td style="font-family:var(--mn);font-size:11px">${r['IPC Number']||'—'}</td><td class="sm" style="max-width:160px">${String(r['Work Covered']||'—').substring(0,50)}</td><td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(r['Actual Payment Date'])}</td><td>${badge(r['Payment Status'])}</td><td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td></tr>`),
+    ipcs.map(r=>`<div class="mcard" style="${(r['Payment Status']||'').toLowerCase()==='pending'?'border-left:3px solid var(--red);':''}"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${r['IPC Number']||'—'}</span>${badge(r['Payment Status'])}</div><div class="mcard-sub">${String(r['Work Covered']||'').substring(0,50)}</div><div class="mcard-row" style="margin-top:6px"><span class="mcard-label">Due ${fd(r['Payment Due Date'])}</span><span style="font-weight:700;font-family:var(--mn);color:var(--red)">${fmtAED(r['Net Due'])}</span></div></div>`).join('')
+  );
+}
+
+// ═══════════════════════════════════════════
+// EVENT DELEGATION — project name clicks
+// ═══════════════════════════════════════════
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-proj]');
+  if(t) gotoProject(t.dataset.proj);
+  // Mobile nav sync with desktop
+  const mnItem=e.target.closest('.mnav-item');
+  if(mnItem){document.querySelectorAll('.mnav-item').forEach(i=>i.classList.remove('active'));mnItem.classList.add('active');}
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+loadAll();
+// Retry if data doesn't load within 8 seconds
+setTimeout(()=>{
+  const kpis = document.getElementById('e-kpis');
+  if(kpis && kpis.querySelector('.spin')){
+    console.log('Data load timeout - retrying...');
+    loadAll();
+  }
+}, 8000);
+setInterval(loadAll, 60*60*1000);
+</script>
+</body>
+</html>
