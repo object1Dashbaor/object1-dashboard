@@ -279,7 +279,8 @@ body.tv-mode .kv{font-size:34px}.body.tv-mode .tbl td{font-size:15px;padding:13p
 </div>
 </div>
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbxef840O_nZ7PW-eZlrGRLlX6a17Akz0T59Q6_5HSnBWjnEp5hYrYm3JeW0sfeRzwQY/exec';
+const SHEET_ID='1XEtxINVudEtJK9dfDUcNqdjL8Om-yEDYaakKX8jqSe0';
+const GVIZ=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
 let D={};const CHARTS={};const ML=5;
 Chart.defaults.color='#64748b';Chart.defaults.borderColor='#e2e8f0';Chart.defaults.font.family="'Outfit',sans-serif";Chart.defaults.animation={duration:900,easing:'easeOutQuart'};
 
@@ -316,16 +317,40 @@ function toggleTV(){document.body.classList.toggle('tv-mode');}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-proj]');if(t)gotoProject(t.dataset.proj);});
 
 // LOAD DATA
+async function gvizFetch(name){
+  try{
+    const r=await fetch(GVIZ+encodeURIComponent(name),{cache:'no-store'});
+    const txt=await r.text();
+    const json=JSON.parse(txt.replace(/^[^{]*/,'').replace(/[^}]*$/,''));
+    if(!json.table)return[];
+    const cols=json.table.cols.map(c=>c.label);
+    return(json.table.rows||[]).map(row=>{
+      const obj={};
+      cols.forEach((c,i)=>{
+        const cell=row.c?.[i];
+        if(!cell){obj[c]='';return;}
+        const raw=cell.v,fmt2=cell.f;
+        // Fix Date(2026,8,15) format from gviz
+        if(raw!==null&&raw!==undefined&&String(raw).startsWith('Date(')){
+          const m=String(raw).match(/Date\((\d+),(\d+),(\d+)\)/);
+          if(m){const d=new Date(+m[1],+m[2],+m[3]);obj[c]=d.toISOString().split('T')[0];}
+          else obj[c]=fmt2||'';
+        } else {
+          obj[c]=raw??fmt2??'';
+        }
+      });
+      return obj;
+    }).filter(row=>Object.values(row).some(v=>v!==''&&v!==null));
+  }catch(e){console.warn('gviz failed:'+name,e.message);return[];}
+}
+
 async function loadAll(){
   try{
     document.getElementById('syncTime').textContent='Loading...';
-    const r=await fetch(API_URL);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const data=await r.json();
-    if(data.error)throw new Error(data.error);
-    ['Projects','IPC Log','NOC Tracker','Stages','Milestones','Activities','Orders','Budget Summary'].forEach(n=>{D[n]=data[n]||[];});
-    const ts=data._meta?new Date(data._meta.timestamp):new Date();
-    document.getElementById('syncTime').textContent='Refreshed '+ts.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const names=['Projects','IPC Log','NOC Tracker','Stages','Milestones','Activities','Orders','Budget Summary'];
+    const results=await Promise.all(names.map(n=>gvizFetch(n)));
+    names.forEach((n,i)=>D[n]=results[i]);
+    document.getElementById('syncTime').textContent='Refreshed '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     buildAll();
   }catch(e){
     console.error('loadAll:',e.message);
@@ -333,10 +358,7 @@ async function loadAll(){
     document.getElementById('e-kpis').innerHTML=`<div style="padding:16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:13px">
       <b>Dashboard data failed to load</b><br>
       <span style="font-size:11px;color:#64748b;margin-top:4px;display:block">Error: ${e.message}</span>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <button onclick="loadAll()" style="padding:6px 14px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px">Retry</button>
-        <button onclick="window.open('${API_URL}')" style="padding:6px 14px;background:#f8fafc;color:#1e3a5f;border:1px solid #e0e8f4;border-radius:5px;cursor:pointer;font-size:12px">Test API URL</button>
-      </div>
+      <button onclick="loadAll()" style="margin-top:10px;padding:6px 16px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer">Retry</button>
     </div>`;
   }
 }
