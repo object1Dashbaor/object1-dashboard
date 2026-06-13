@@ -2,501 +2,559 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Object1 — Owner Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#070d1a;--s:#0d1a2e;--card:#0f1e34;--b:#1d3352;
-  --t:#e2eeff;--d:#7a9ec4;--br:#ffffff;
-  --red:#ff3352;--rsf:rgba(255,51,82,.12);
-  --og:#ff7a2a;--osf:rgba(255,122,42,.12);
-  --gn:#00d48a;--gsf:rgba(0,212,138,.1);
-  --bl:#2f7fff;--bsf:rgba(47,127,255,.1);
-  --pu:#9d7fea;--pusf:rgba(157,127,234,.1);
-  --gd:#f5c518;--gdsf:rgba(245,197,24,.1);
-  --tl:#00bfbf;
+  --bg:#f0f4f9;--card:#ffffff;--border:#e0e8f4;
+  --text:#1e3a5f;--dim:#64748b;--dark:#0f2042;
+  --red:#dc2626;--redbg:#fef2f2;--redborder:#fecaca;
+  --og:#ea580c;--ogbg:#fff7ed;--ogborder:#fed7aa;
+  --gn:#16a34a;--gnbg:#f0fdf4;--gnborder:#bbf7d0;
+  --bl:#2563eb;--blbg:#eff6ff;--blborder:#bfdbfe;
+  --pu:#7c3aed;--pubg:#f5f3ff;--puborder:#ddd6fe;
+  --gd:#d97706;--gdbg:#fffbeb;--gdborder:#fde68a;
+  --tl:#0891b2;--tlbg:#ecfeff;--tlborder:#a5f3fc;
+  --nav:#0f2042;
   --fn:'Outfit',sans-serif;--mn:'JetBrains Mono',monospace;
 }
-body{background:#f0f4f9;color:#1e3a5f;font-family:var(--fn);min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
+body{background:var(--bg);color:var(--text);font-family:var(--fn);min-height:100vh;overflow-x:hidden}
 
-/* HEADER */
+/* ══ HEADER ══════════════════════════════════════ */
 .hdr{
-  background:linear-gradient(135deg,#0f2042 0%,#1a3660 100%);
-  border-bottom:none;
+  background:linear-gradient(135deg,#0f2042,#1a3a6e);
   padding:0 20px;height:52px;
   display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:200;
+  position:sticky;top:0;z-index:300;
   box-shadow:0 2px 12px rgba(15,32,66,.3)
 }
-.logo{display:flex;align-items:center;gap:10px}
-.logo-box{background:#ffffff;color:#0f2042;font-weight:900;font-size:13px;letter-spacing:-.5px;padding:4px 8px;border-radius:5px;line-height:1;white-space:nowrap}
-.logo-name{font-size:14px;font-weight:700;color:#ffffff;letter-spacing:-.3px}
-.logo-sub{font-size:10px;color:rgba(255,255,255,.6);margin-top:1px}
+.logo{display:flex;align-items:center;gap:9px}
+.logo-box{background:#fff;color:#0f2042;font-weight:900;font-size:13px;padding:4px 7px;border-radius:5px;line-height:1}
+.logo-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:rgba(255,255,255,.55);margin-top:1px}
 .hdr-r{display:flex;align-items:center;gap:10px}
-.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mn);color:#4ade80;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);padding:3px 9px;border-radius:20px}
+.sync-lbl{font-size:10px;color:rgba(255,255,255,.55);font-family:var(--mn)}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;font-family:var(--mn);color:#4ade80;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);padding:3px 8px;border-radius:20px}
 .live-dot{width:5px;height:5px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite}
-.sync-lbl{font-size:10px;color:rgba(255,255,255,.6);font-family:var(--mn)}
-.tv-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#ffffff;font-size:10px;padding:4px 10px;border-radius:4px;cursor:pointer;font-family:var(--mn)}
-.tv-btn:hover{background:rgba(47,127,255,.25)}
+.tv-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 9px;border-radius:4px;cursor:pointer;font-family:var(--mn)}
 
-/* TABS */
-.tabs{background:#ffffff;border-bottom:2px solid #e0e8f4;padding:0 20px;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;scrollbar-width:none;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.tabs::-webkit-scrollbar{display:none}
-.tab{touch-action:manipulation}
-.tab{padding:12px 16px;font-size:10px;font-weight:700;color:#64748b;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;text-transform:uppercase;letter-spacing:.7px}
-.tab:hover{color:#1e3a5f}
-.tab.active{color:#1e3a5f;border-bottom-color:#2563eb}
+/* ══ DESKTOP TABS ═════════════════════════════════ */
+.dtabs{background:#fff;border-bottom:2px solid var(--border);padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.dtabs::-webkit-scrollbar{display:none}
+.dtab{padding:12px 16px;font-size:10px;font-weight:700;color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;text-transform:uppercase;letter-spacing:.7px}
+.dtab:hover{color:var(--dark)}
+.dtab.active{color:var(--dark);border-bottom-color:var(--bl)}
 
-/* LAYOUT */
-.main{padding:16px 18px;max-width:1900px;margin:0 auto}
+/* ══ MOBILE BOTTOM NAV ════════════════════════════ */
+.mnav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid var(--border);
+  z-index:300;padding:0;
+  box-shadow:0 -2px 12px rgba(0,0,0,.08)
+}
+.mnav-items{display:flex;justify-content:space-around}
+.mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 10px;cursor:pointer;color:var(--dim);transition:color .15s;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;min-width:0}
+.mnav-item svg{width:20px;height:20px;stroke-width:1.8}
+.mnav-item.active{color:var(--bl)}
+.mnav-item.active svg{stroke:var(--bl)}
+
+/* ══ LAYOUT ═══════════════════════════════════════ */
+.main{padding:16px 18px;max-width:1800px;margin:0 auto}
 .page{display:none}
 .page.active{display:block;animation:fi .2s ease}
-@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes countUp{from{opacity:0}to{opacity:1}}
-.kpi{opacity:0;animation:slideUp .4s ease forwards}
-.kpi:nth-child(1){animation-delay:.05s}
-.kpi:nth-child(2){animation-delay:.1s}
-.kpi:nth-child(3){animation-delay:.15s}
-.kpi:nth-child(4){animation-delay:.2s}
-.kpi:nth-child(5){animation-delay:.25s}
-.kpi:nth-child(6){animation-delay:.3s}
-.kpi:nth-child(7){animation-delay:.35s}
-.kpi:nth-child(8){animation-delay:.4s}
-.kpi:nth-child(9){animation-delay:.45s}
-.card{opacity:0;animation:slideUp .45s ease forwards;animation-delay:.08s}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* KPI ROW */
-.kr{display:grid;gap:10px;margin-bottom:14px;grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}
-.kpi{background:#ffffff;border:1px solid #e0e8f4;border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 1px 6px rgba(15,32,66,.06)}
+/* ══ KPI ROW ══════════════════════════════════════ */
+.kr{display:grid;gap:10px;margin-bottom:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(15,32,66,.06)}
 .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:2px 2px 0 0}
-.kpi.cr::after{background:linear-gradient(90deg,var(--red),transparent)}
-.kpi.co::after{background:linear-gradient(90deg,var(--og),transparent)}
-.kpi.cg::after{background:linear(90deg,var(--gn),transparent)}
-.kpi.cg::after{background:linear-gradient(90deg,var(--gn),transparent)}
-.kpi.cb::after{background:linear-gradient(90deg,var(--bl),transparent)}
-.kpi.cp::after{background:linear-gradient(90deg,var(--pu),transparent)}
-.kpi.cd::after{background:linear-gradient(90deg,var(--gd),transparent)}
-.kpi.ct::after{background:linear-gradient(90deg,var(--tl),transparent)}
-.kl{font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.9px;margin-bottom:5px;font-weight:700}
-.kv{font-size:22px;font-weight:800;color:#0f2042;line-height:1;letter-spacing:-1px}
-.ks{font-size:10px;color:#64748b;margin-top:3px}
+.kpi.cr::after{background:var(--red)}.kpi.co::after{background:var(--og)}
+.kpi.cg::after{background:var(--gn)}.kpi.cb::after{background:var(--bl)}
+.kpi.cp::after{background:var(--pu)}.kpi.cd::after{background:var(--gd)}
+.kpi.ct2::after{background:var(--tl)}
+.kl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.9px;margin-bottom:5px;font-weight:700}
+.kv{font-size:22px;font-weight:800;color:var(--dark);line-height:1;letter-spacing:-1px}
+.ks{font-size:10px;color:var(--dim);margin-top:3px}
 
-/* GRID */
+/* ══ GRID ═════════════════════════════════════════ */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
 .g13{display:grid;grid-template-columns:1.2fr 2.8fr;gap:12px;margin-bottom:12px}
-.g31{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
-@media(max-width:900px){.g2,.g3,.g13,.g31{grid-template-columns:1fr}}
 .mb{margin-bottom:12px}
 
-/* CARD */
-.card{background:#ffffff;border:1px solid #e0e8f4;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(15,32,66,.07)}
-.ch{padding:11px 16px;border-bottom:1px solid #edf2f8;display:flex;align-items:center;justify-content:space-between;background:#f8fafd}
-.ct{font-size:11px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
-.dc{width:6px;height:6px;border-radius:50%}
-.cc{font-size:10px;color:#64748b;font-family:var(--mn)}
-.scroll{overflow:auto;max-height:340px;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;-webkit-overflow-scrolling:touch}
+/* ══ CARD ════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(15,32,66,.06);margin-bottom:12px}
+.ch{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#f8fafd}
+.ct{font-size:11px;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
+.dc{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cc{font-size:10px;color:var(--dim);font-family:var(--mn)}
 
-/* TABLE */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%}
-.tbl{width:100%;border-collapse:collapse;min-width:600px}
-.tbl th{padding:8px 12px;font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:2px solid #e0e8f4;white-space:nowrap;background:#f8fafd;position:sticky;top:0;z-index:2;font-weight:700}
-.tbl td{padding:9px 12px;font-size:12px;color:#1e3a5f;border-bottom:1px solid #edf2f8;vertical-align:middle}
+/* ══ TABLE ═══════════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;min-width:550px}
+.tbl th{padding:8px 12px;font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;background:#f8fafd;position:sticky;top:0;z-index:2;font-weight:700}
+.tbl td{padding:9px 12px;font-size:12px;color:var(--text);border-bottom:1px solid #edf2f8;vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:#f0f6ff}
-.tbl .n{font-family:var(--mn);text-align:right;color:#0f2042}
-.tbl .sm{font-size:10px;color:#64748b}
+.tbl tr:hover td{background:#f5f8ff}
+.tbl .n{font-family:var(--mn);text-align:right;color:var(--dark)}
+.tbl .sm{font-size:10px;color:var(--dim)}
+.scroll{overflow-y:auto;max-height:340px;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;-webkit-overflow-scrolling:touch}
 
-/* BADGE */
-.badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-.br{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-.bo{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa}
-.bg{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-.bb{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
-.bd{background:#f8fafc;color:#64748b;border:1px solid #e2e8f0}
-.bgd{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+/* ══ BADGE ═══════════════════════════════════════ */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.br{background:var(--redbg);color:var(--red);border:1px solid var(--redborder)}
+.bo{background:var(--ogbg);color:var(--og);border:1px solid var(--ogborder)}
+.bg{background:var(--gnbg);color:var(--gn);border:1px solid var(--gnborder)}
+.bb{background:var(--blbg);color:var(--bl);border:1px solid var(--blborder)}
+.bd{background:#f8fafc;color:var(--dim);border:1px solid #e2e8f0}
+.bgd{background:var(--gdbg);color:var(--gd);border:1px solid var(--gdborder)}
 
-/* PROGRESS */
+/* ══ PROGRESS ════════════════════════════════════ */
 .pw{background:#e2e8f0;border-radius:3px;height:6px;overflow:hidden;min-width:60px}
-.pb{height:100%;border-radius:3px;transition:width .8s ease}
+.pb{height:100%;border-radius:3px}
 
-/* CHARTS */
-.chart-wrap{padding:14px;position:relative}
-.chart-wrap canvas{max-height:240px}@media(max-width:600px){.chart-wrap canvas{max-height:160px}}
-.donut-wrap{height:220px;position:relative;padding:10px 14px}
-
-/* CAST ROW */
-.ci{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;border-bottom:1px solid #edf2f8;gap:8px}
+/* ══ CAST ROW ════════════════════════════════════ */
+.ci{display:flex;justify-content:space-between;align-items:flex-start;padding:11px 15px;border-bottom:1px solid #edf2f8;gap:10px}
 .ci:last-child{border-bottom:none}
-.ci-n{font-size:12px;font-weight:600;color:#0f2042}
-.ci-m{font-size:10px;color:#64748b;margin-top:2px}
-.ci-d{font-size:10px;font-family:var(--mn);color:#ea580c}
-.ci-c{font-size:12px;font-weight:700;font-family:var(--mn);color:#d97706}
-.ci-v{font-size:10px;color:#64748b}
-.tag-w{background:rgba(255,122,42,.15);color:var(--og);font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;display:inline-block}
-.tag-ll{background:#fef2f2;color:#dc2626;font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;margin-left:4px;vertical-align:middle}
+.ci-n{font-size:12px;font-weight:600;color:var(--dark)}
+.ci-m{font-size:10px;color:var(--dim);margin-top:2px}
+.ci-d{font-size:10px;font-family:var(--mn);color:var(--og)}
+.ci-c{font-size:12px;font-weight:700;font-family:var(--mn);color:var(--gd)}
+.ci-v{font-size:10px;color:var(--dim)}
+.tag-w{background:var(--ogbg);color:var(--og);font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;display:inline-block;margin-bottom:2px}
+.tag-ll{background:var(--redbg);color:var(--red);font-size:8px;font-weight:700;padding:1px 4px;border-radius:2px;text-transform:uppercase;letter-spacing:.3px;margin-left:4px;vertical-align:middle}
 
-/* TV MODE */
+/* ══ MOBILE CARD LIST (replaces tables) ══════════ */
+.mlist{display:none}
+.mcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(15,32,66,.05)}
+.mcard-title{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:3px}
+.mcard-sub{font-size:11px;color:var(--dim);margin-bottom:8px}
+.mcard-row{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.mcard-label{font-size:10px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.mcard-val{font-size:12px;font-weight:700;color:var(--dark);font-family:var(--mn)}
+.mcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.mcard-item{background:#f8fafd;border-radius:6px;padding:7px 10px}
+.mcard-item-lbl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.mcard-item-val{font-size:12px;font-weight:700;color:var(--dark);margin-top:2px}
+.mcard-bar{margin-top:8px}
+.mcard-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.mcard-proj-link{color:var(--bl);font-weight:700;font-size:14px;text-decoration:none}
+
+/* ══ CHART ═══════════════════════════════════════ */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(15,32,66,.06)}
+.chart-inner{padding:12px 14px}
+.chart-inner canvas{max-height:220px}
+
+/* ══ UTIL ════════════════════════════════════════ */
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--bl);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{padding:28px;text-align:center;color:#94a3b8;font-size:11px}
+.kpi-anim{opacity:0;animation:slideUp .4s ease forwards}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ PROJECT DETAIL SELECTOR ════════════════════ */
+.proj-selector{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.proj-select-input{background:#fff;border:1px solid var(--border);color:var(--dark);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--fn);min-width:260px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+
+/* ══ TV MODE ════════════════════════════════════ */
 body.tv-mode{background:#070d1a;color:#e2eeff}
-body.tv-mode .card{background:#0f1e34;border-color:#1d3352;box-shadow:none}
+body.tv-mode .card,body.tv-mode .kpi,body.tv-mode .chart-card{background:#0f1e34;border-color:#1d3352;box-shadow:none}
 body.tv-mode .tbl th{background:#091628;color:#a8c8f0;border-color:#1d3352}
-body.tv-mode .tbl td{color:#e2eeff;border-color:rgba(29,51,82,.5)}
-body.tv-mode .tbl tr:hover td{background:rgba(47,127,255,.08)}
+body.tv-mode .tbl td{color:#e2eeff;border-color:rgba(29,51,82,.4)}
+body.tv-mode .tbl tr:hover td{background:rgba(47,127,255,.06)}
 body.tv-mode .ch{background:rgba(0,0,0,.2);border-color:#1d3352}
-body.tv-mode .ct{color:#ffffff}
-body.tv-mode .kpi{background:#0f1e34;border-color:#1d3352;box-shadow:none}
-body.tv-mode .kv{color:#ffffff}
-body.tv-mode .kl{color:#7a9ec4}
-body.tv-mode .ks{color:#7a9ec4}
-body.tv-mode .tabs{background:#0d1a2e;border-color:#1d3352}
-body.tv-mode .tab{color:#4a6585}
-body.tv-mode .tab.active{color:#ffffff}
+body.tv-mode .ct{color:#fff}
+body.tv-mode .kv{color:#fff}
+body.tv-mode .kl,.ks{color:#7a9ec4}
+body.tv-mode .dtabs{background:#0d1a2e;border-color:#1d3352}
+body.tv-mode .dtab{color:#4a6585}
+body.tv-mode .dtab.active{color:#fff}
 body.tv-mode .pw{background:rgba(255,255,255,.1)}
-body.tv-mode .ci-n{color:#e2eeff}
-body.tv-mode .scroll{scrollbar-color:#1d3352 transparent}
-body.tv-mode .hdr{height:64px}
-body.tv-mode .kv{font-size:34px;letter-spacing:-2px}
-body.tv-mode .kl{font-size:11px;letter-spacing:1px}
-body.tv-mode .ks{font-size:12px}
-body.tv-mode .tbl td{font-size:15px;padding:13px 16px}
-body.tv-mode .tbl th{font-size:11px;padding:10px 16px}
+body.tv-mode .kv{font-size:34px}
+body.tv-mode .tbl td{font-size:15px;padding:13px 14px}
+body.tv-mode .tbl th{font-size:11px}
 body.tv-mode .badge{font-size:12px;padding:4px 10px}
 body.tv-mode .kpi{padding:20px 22px}
 body.tv-mode .ct{font-size:14px}
-body.tv-mode .logo-name{font-size:20px}
-body.tv-mode .logo-sub{font-size:13px}
-body.tv-mode .tab{font-size:13px;padding:14px 22px}
 
-/* UTIL */
-.spin{display:inline-block;width:14px;height:14px;border:2px solid #e0e8f4;border-top-color:var(--bl);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
-@keyframes sp{to{transform:rotate(360deg)}}
-.empty{padding:28px;text-align:center;color:#94a3b8;font-size:11px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.w100{width:100%}
-.flex{display:flex;gap:12px}
-.flex > *{flex:1;min-width:0}
-
-/* MOBILE */
-@media(max-width:768px){
-  .tbl{min-width:500px}
-  .scroll{-webkit-overflow-scrolling:touch}
+/* ══ DESKTOP ONLY ════════════════════════════════ */
+@media(min-width:769px){
+  .mnav{display:none!important}
+  .mlist{display:none!important}
+  .main{padding-bottom:16px}
 }
-@media(max-width:600px){
-  .main{padding:8px 10px}
-  .kr{grid-template-columns:repeat(2,1fr);gap:8px}
-  .hdr{padding:0 10px;height:46px}
-  .logo-name{font-size:13px}
-  .logo-sub{display:none}
+
+/* ══ MOBILE ONLY ══════════════════════════════════ */
+@media(max-width:768px){
+  .dtabs{display:none}
+  .mnav{display:block}
+  .main{padding:12px 12px 80px}
+  /* Hide desktop tables, show mobile cards */
+  .tbl-wrap,.scroll .tbl{display:none}
+  .mlist{display:block}
+  /* Hide desktop chart cards */
+  .g13 > div:first-child{display:none}
+  .g13{grid-template-columns:1fr}
+  .g2,.g3{grid-template-columns:1fr}
+  /* KPIs 2 col */
+  .kr{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:11px 13px}
   .kv{font-size:20px}
   .kl{font-size:9px}
   .ks{font-size:9px}
-  .tabs{padding:0 6px}
-  .tab{padding:9px 10px;font-size:8.5px;letter-spacing:.3px}
-  .tbl th{padding:6px 8px;font-size:9px}
-  .tbl td{padding:8px 8px;font-size:11px}
+  .chart-card{display:none}
+  .hdr{padding:0 12px;height:48px}
+  .logo-name{font-size:13px}
+  .logo-sub{display:none}
   .tv-btn{display:none}
-  .kpi{padding:10px 11px}
-  .ch{padding:8px 12px}
+  .ch{padding:9px 13px}
   .ct{font-size:10px}
-  .g2,.g3,.g13,.g31{grid-template-columns:1fr;gap:8px}
-  .mb{margin-bottom:8px}
-  .card{border-radius:8px}
-  .scroll{max-height:280px}
-  /* HIDE CHARTS ON MOBILE — not useful on small screen */
-  .chart-wrap.card{display:none}
-  /* Keep chart wraps inside cards visible but smaller */
-  .card .chart-wrap{padding:8px}
-  .card .chart-wrap canvas{max-height:130px}
-  /* Hide non-essential table columns */
-  .tbl .hide-mobile{display:none}
-  /* Make g13 (charts+table) show only the table */
-  .g13{grid-template-columns:1fr}
-  .g13 > div:first-child{display:none}
+  .proj-select-input{min-width:unset;width:100%}
+  .proj-selector{flex-direction:column;align-items:stretch}
 }
 @media(max-width:400px){
-  .kr{grid-template-columns:1fr 1fr}
-  .kv{font-size:17px}
-  .tab{padding:8px 8px;font-size:8px}
+  .main{padding:10px 10px 76px}
+  .kv{font-size:18px}
 }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="hdr">
   <div class="logo">
+    <div class="logo-box">Object 1</div>
     <div>
-      <div class="logo-name">Object<span style="color:var(--bl)">1</span> <span style="color:#64748b;font-weight:400;font-size:13px">Real Estate Development</span></div>
+      <div class="logo-name">Real Estate Development</div>
       <div class="logo-sub">Owner Operations Dashboard</div>
     </div>
   </div>
   <div class="hdr-r">
     <div class="sync-lbl" id="syncTime">Loading...</div>
-    <button class="tv-btn" onclick="toggleTV()">⛶ TV MODE</button>
+    <button class="tv-btn" onclick="toggleTV()">⛶ TV</button>
     <div class="live-pill"><span class="live-dot"></span>LIVE</div>
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="go('exec',this)">Executive Summary</div>
-  <div class="tab" onclick="go('finance',this)">Finance & Budget</div>
-  <div class="tab" onclick="go('construction',this)">Construction</div>
-  <div class="tab" onclick="go('procurement',this)">Procurement</div>
-  <div class="tab" onclick="go('noc',this)">NOC & Approvals</div>
-  <div class="tab" onclick="go('project',this)">⬡ Project Detail</div>
+<!-- DESKTOP TABS -->
+<div class="dtabs" id="dtabs">
+  <div class="dtab active" onclick="go('exec',this)">Executive Summary</div>
+  <div class="dtab" onclick="go('finance',this)">Finance & Budget</div>
+  <div class="dtab" onclick="go('construction',this)">Construction</div>
+  <div class="dtab" onclick="go('procurement',this)">Procurement</div>
+  <div class="dtab" onclick="go('noc',this)">NOC & Approvals</div>
+  <div class="dtab" onclick="go('project',this)">⬡ Project Detail</div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mnav">
+  <div class="mnav-items">
+    <div class="mnav-item active" onclick="go('exec',this)" data-page="exec">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Summary
+    </div>
+    <div class="mnav-item" onclick="go('finance',this)" data-page="finance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Finance
+    </div>
+    <div class="mnav-item" onclick="go('construction',this)" data-page="construction">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      Build
+    </div>
+    <div class="mnav-item" onclick="go('procurement',this)" data-page="procurement">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Orders
+    </div>
+    <div class="mnav-item" onclick="go('noc',this)" data-page="noc">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      NOC
+    </div>
+  </div>
 </div>
 
 <div class="main">
 
-<!-- PAGE 1: EXECUTIVE -->
+<!-- ════ EXEC ════ -->
 <div class="page active" id="p-exec">
   <div class="kr" id="e-kpis"><span class="spin"></span></div>
   <div class="g13">
     <div>
-      <div class="chart-wrap card mb chart-card" style="height:290px">
+      <div class="chart-card mb">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Project Health</span></div>
-        <div class="chart-wrap"><canvas id="chart-health"></canvas></div>
+        <div class="chart-inner"><canvas id="chart-health"></canvas></div>
       </div>
-      <div class="chart-wrap card mb chart-card" style="height:290px">
+      <div class="chart-card mb">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Payment Status</span></div>
-        <div class="chart-wrap"><canvas id="chart-payment"></canvas></div>
+        <div class="chart-inner"><canvas id="chart-payment"></canvas></div>
       </div>
     </div>
     <div>
-      <div class="card mb" id="e-projects"></div>
+      <div class="card">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>All Projects</span><span class="cc" id="e-proj-count"></span></div>
+        <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="e-proj-tbl"></table></div></div>
+        <div class="mlist" id="e-proj-cards"></div>
+      </div>
     </div>
   </div>
-  <div class="g2">
-    <div class="card mb" id="e-castings"></div>
-    <div>
-      <div class="card mb" id="e-activities"></div>
-      <div class="card" id="e-ll"></div>
-    </div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Casting Schedule — This Month</span><span class="cc" id="e-cast-count"></span></div>
+    <div id="e-castings"></div>
+  </div>
+  <div class="card mt" style="margin-top:12px">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Construction Activities — This Week</span><span class="cc" id="e-act-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="e-act-tbl"></table></div></div>
+    <div class="mlist" id="e-act-cards"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>Long Lead — Action Required</span><span class="cc" id="e-ll-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="e-ll-tbl"></table></div></div>
+    <div class="mlist" id="e-ll-cards"></div>
   </div>
 </div>
 
-<!-- PAGE 2: FINANCE -->
+<!-- ════ FINANCE ════ -->
 <div class="page" id="p-finance">
   <div class="kr" id="f-kpis"></div>
   <div class="g2">
-    <div class="card mb" id="f-budget"></div>
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget per Project</span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="f-budget-tbl"></table></div></div>
+      <div class="mlist" id="f-budget-cards"></div>
+    </div>
     <div>
-      <div class="chart-wrap card mb">
-        <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Contract vs Paid vs Balance</span></div>
-        <div class="chart-wrap"><canvas id="chart-budget-bar"></canvas></div>
+      <div class="chart-card mb">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Contract vs Paid</span></div>
+        <div class="chart-inner"><canvas id="chart-budget-bar"></canvas></div>
       </div>
-      <div class="card mb" id="f-upcoming"></div>
+      <div class="card">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Upcoming Payments</span><span class="cc" id="f-upcoming-count"></span></div>
+        <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="f-upcoming-tbl"></table></div></div>
+        <div class="mlist" id="f-upcoming-cards"></div>
+      </div>
     </div>
   </div>
-  <div class="card mb" id="f-ipc"></div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Full IPC Log</span><span class="cc" id="f-ipc-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="f-ipc-tbl"></table></div></div>
+    <div class="mlist" id="f-ipc-cards"></div>
+  </div>
 </div>
 
-<!-- PAGE 3: CONSTRUCTION -->
+<!-- ════ CONSTRUCTION ════ -->
 <div class="page" id="p-construction">
   <div class="kr" id="c-kpis"></div>
-  <div class="card mb" id="c-castings"></div>
-  <div class="g2">
-    <div class="card mb" id="c-stages"></div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Slab Casting Schedule</span><span class="cc" id="c-cast-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-cast-tbl"></table></div></div>
+    <div class="mlist" id="c-cast-cards"></div>
+  </div>
+  <div class="g2" style="margin-top:12px">
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Stages</span><span class="cc" id="c-stage-count"></span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-stage-tbl"></table></div></div>
+      <div class="mlist" id="c-stage-cards"></div>
+    </div>
     <div>
-      <div class="chart-wrap card mb">
+      <div class="chart-card mb">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Stage Completion</span></div>
-        <div class="chart-wrap"><canvas id="chart-stages"></canvas></div>
+        <div class="chart-inner"><canvas id="chart-stages"></canvas></div>
       </div>
-      <div class="card mb" id="c-milestones"></div>
+      <div class="card">
+        <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Milestones</span><span class="cc" id="c-mile-count"></span></div>
+        <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-mile-tbl"></table></div></div>
+        <div class="mlist" id="c-mile-cards"></div>
+      </div>
     </div>
   </div>
-  <div class="card mb" id="c-activities"></div>
+  <div class="card" style="margin-top:12px">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Activities</span><span class="cc" id="c-act-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="c-act-tbl"></table></div></div>
+    <div class="mlist" id="c-act-cards"></div>
+  </div>
 </div>
 
-<!-- PAGE 4: PROCUREMENT -->
+<!-- ════ PROCUREMENT ════ -->
 <div class="page" id="p-procurement">
   <div class="kr" id="pr-kpis"></div>
   <div class="g2">
-    <div class="card mb" id="pr-ll"></div>
-    <div>
-      <div class="chart-wrap card mb">
-        <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Order Status Breakdown</span></div>
-        <div class="chart-wrap"><canvas id="chart-orders"></canvas></div>
-      </div>
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>Long Lead Orders</span><span class="cc" id="pr-ll-count"></span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="pr-ll-tbl"></table></div></div>
+      <div class="mlist" id="pr-ll-cards"></div>
+    </div>
+    <div class="chart-card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Order Status</span></div>
+      <div class="chart-inner"><canvas id="chart-orders"></canvas></div>
     </div>
   </div>
-  <div class="card mb" id="pr-all"></div>
+  <div class="card">
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Orders</span><span class="cc" id="pr-all-count"></span></div>
+    <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="pr-all-tbl"></table></div></div>
+    <div class="mlist" id="pr-all-cards"></div>
+  </div>
 </div>
 
-<!-- PAGE 5: NOC -->
+<!-- ════ NOC ════ -->
 <div class="page" id="p-noc">
   <div class="kr" id="n-kpis"></div>
   <div class="g2">
-    <div class="card mb" id="n-noc"></div>
-    <div>
-      <div class="chart-wrap card mb">
-        <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOC Status</span></div>
-        <div class="chart-wrap"><canvas id="chart-noc"></canvas></div>
-      </div>
+    <div class="card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOC Tracker</span><span class="cc" id="n-noc-count"></span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl" id="n-noc-tbl"></table></div></div>
+      <div class="mlist" id="n-noc-cards"></div>
+    </div>
+    <div class="chart-card">
+      <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOC Status</span></div>
+      <div class="chart-inner"><canvas id="chart-noc"></canvas></div>
     </div>
   </div>
 </div>
 
-<!-- PAGE 6: PROJECT DETAIL -->
+<!-- ════ PROJECT DETAIL ════ -->
 <div class="page" id="p-project">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.7px">Select Project:</div>
-    <select id="proj-select" onchange="buildProject()" style="background:#ffffff;border:1px solid #e0e8f4;color:#0f2042;padding:8px 14px;border-radius:6px;font-size:13px;font-family:var(--fn);min-width:280px;cursor:pointer">
+  <div class="proj-selector">
+    <div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.7px">Select Project</div>
+    <select id="proj-select" class="proj-select-input" onchange="buildProject()">
       <option value="">— Choose a project —</option>
     </select>
-    <div id="proj-health" style="margin-left:4px"></div>
+    <div id="proj-health"></div>
   </div>
-
   <div id="proj-header" style="display:none">
-    <!-- Project Info Banner -->
-    <div class="card mb" id="proj-info"></div>
-
-    <!-- KPIs -->
-    <div class="kr" id="proj-kpis" style="margin-bottom:14px"></div>
-
-    <!-- Budget + Castings -->
-    <div class="g2">
-      <div class="card mb" id="proj-budget"></div>
-      <div class="card mb" id="proj-castings"></div>
+    <div class="card" id="proj-info"></div>
+    <div class="kr" id="proj-kpis" style="margin-top:12px"></div>
+    <div class="g2" style="margin-top:12px">
+      <div class="card" id="proj-budget"></div>
+      <div class="card" id="proj-castings"></div>
     </div>
-
-    <!-- Stages -->
-    <div class="card mb" id="proj-stages"></div>
-
-    <!-- Milestones -->
-    <div class="card mb" id="proj-milestones"></div>
-
-    <!-- Activities -->
-    <div class="card mb" id="proj-activities"></div>
-
-    <!-- Orders + NOCs side by side -->
-    <div class="g2">
-      <div class="card mb" id="proj-orders"></div>
-      <div class="card mb" id="proj-nocs"></div>
+    <div class="card" id="proj-stages"></div>
+    <div class="card" style="margin-top:12px" id="proj-milestones"></div>
+    <div class="card" style="margin-top:12px" id="proj-activities"></div>
+    <div class="g2" style="margin-top:12px">
+      <div class="card" id="proj-orders"></div>
+      <div class="card" id="proj-nocs"></div>
     </div>
-
-    <!-- IPC -->
-    <div class="card mb" id="proj-ipc"></div>
+    <div class="card" style="margin-top:12px" id="proj-ipc"></div>
   </div>
-
   <div id="proj-empty" style="padding:60px;text-align:center;color:#94a3b8">
     <div style="font-size:32px;margin-bottom:12px">⬡</div>
-    <div style="font-size:14px;font-weight:600">Select a project to view its full details</div>
-    <div style="font-size:12px;margin-top:6px">All stages, milestones, activities, budget, orders and NOCs in one view</div>
+    <div style="font-size:14px;font-weight:600;color:var(--dark)">Select a project to view full details</div>
+    <div style="font-size:12px;margin-top:6px">Budget · Stages · Milestones · Activities · Orders · NOCs · IPCs</div>
   </div>
 </div>
 
 </div><!-- /main -->
 
 <script>
-// ── CONFIG ──────────────────────────────────
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
 const SHEET_ID = '1XEtxINVudEtJK9dfDUcNqdjL8Om-yEDYaakKX8jqSe0';
 const BASE = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=`;
 let D = {};
 const CHARTS = {};
+const isMobile = () => window.innerWidth <= 768;
 
 Chart.defaults.color = '#64748b';
 Chart.defaults.borderColor = '#e2e8f0';
 Chart.defaults.font.family = "'Outfit', sans-serif";
-Chart.defaults.animation = { duration: 1000, easing: 'easeOutQuart' };
+Chart.defaults.animation = {duration:900, easing:'easeOutQuart'};
 
-// ── DATE HELPERS ─────────────────────────────
-function weekBounds() {
-  const now = new Date(), day = now.getDay();
-  const mon = new Date(now); mon.setDate(now.getDate()-(day===0?6:day-1)); mon.setHours(0,0,0,0);
-  const sun = new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
-  return {s:mon, e:sun};
+// ═══════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════
+function weekBounds(){
+  const now=new Date(), day=now.getDay();
+  const mon=new Date(now); mon.setDate(now.getDate()-(day===0?6:day-1)); mon.setHours(0,0,0,0);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6); sun.setHours(23,59,59,999);
+  return {s:mon,e:sun};
 }
-function monthBounds() {
-  const now = new Date();
-  return {s:new Date(now.getFullYear(),now.getMonth(),1), e:new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59)};
+function monthBounds(){
+  const now=new Date();
+  return {s:new Date(now.getFullYear(),now.getMonth(),1),e:new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59)};
 }
-function inR(d, b) {
-  if(!d||!d.toString().trim()) return false;
-  const dt=new Date(d); return !isNaN(dt)&&dt>=b.s&&dt<=b.e;
-}
+function inR(d,b){if(!d||d==='') return false; const dt=parseDate(d); return !isNaN(dt)&&dt>=b.s&&dt<=b.e;}
 const WK=weekBounds(), MO=monthBounds();
 
-// ── UTILS ────────────────────────────────────
-const n = v => parseFloat(String(v||'').replace(/,/g,''))||0;
-function fmt(v) {
-  const x=n(v);
-  if(x>=1000000) return (x/1000000).toFixed(1)+'M';
-  if(x>=1000) return Math.round(x/1000)+'K';
-  return x.toLocaleString();
+// ═══════════════════════════════════════════
+// PARSE DATE — handles Google Sheets "Date(2026,8,15)" format
+// ═══════════════════════════════════════════
+function parseDate(d){
+  if(!d||d==='null'||d==='') return new Date('invalid');
+  const s=String(d).trim();
+  // Google Sheets gviz format: Date(year,month,day) — month is 0-indexed
+  const m=s.match(/^Date\((\d+),(\d+),(\d+)\)/);
+  if(m) return new Date(parseInt(m[1]),parseInt(m[2]),parseInt(m[3]));
+  return new Date(s);
 }
-function fmtAED(v) { return n(v).toLocaleString('en-AE',{maximumFractionDigits:0})+' AED'; }
-function fd(d) {
-  if(!d||d==='null'||d==='') return '—';
-  const dt=new Date(d); return isNaN(dt)?String(d):dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});
+
+function fd(d){
+  if(!d||d===''||d==='null') return '—';
+  const dt=parseDate(d);
+  if(isNaN(dt)) return String(d);
+  return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'});
 }
-function fds(d) {
-  if(!d||d==='null'||d==='') return '—';
-  const dt=new Date(d); return isNaN(dt)?String(d):dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+function fds(d){
+  if(!d||d===''||d==='null') return '—';
+  const dt=parseDate(d);
+  if(isNaN(dt)) return String(d);
+  return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 }
-function pct(p){
-  const v = parseFloat(p)||0;
-  // Ragic % formula returns decimal (0.38) not percentage (38)
-  if(v > 0 && v <= 1) return Math.min(100, v * 100);
-  return Math.min(100, v);
-}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const n=v=>parseFloat(String(v||'').replace(/,/g,''))||0;
+function fmt(v){const x=n(v);if(x>=1000000)return(x/1000000).toFixed(1)+'M';if(x>=1000)return Math.round(x/1000)+'K';return x.toLocaleString();}
+function fmtAED(v){return n(v).toLocaleString('en-AE',{maximumFractionDigits:0})+' AED';}
+function pct(p){const v=parseFloat(p)||0;if(v>0&&v<=1)return Math.min(100,v*100);return Math.min(100,v);}
 function bc(p){const x=pct(p);return x<30?'var(--red)':x<70?'var(--og)':'var(--gn)';}
-function bar(p,w=70){const v=pct(p);return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${v}%;background:${bc(v)}"></div></div><span style="font-size:9px;color:#64748b;font-family:var(--mn)">${v.toFixed(0)}%</span></div>`;}
+function bar(p,w=70){const v=pct(p);return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${v}%;background:${bc(v)}"></div></div><span style="font-size:9px;color:var(--dim);font-family:var(--mn)">${v.toFixed(0)}%</span></div>`;}
 function badge(s){
   if(!s||s==='null'||s==='') return '<span class="badge bd">—</span>';
   const l=s.toLowerCase().trim();
   const c=l.includes('delay')||l.includes('overdue')||l.includes('not ordered')?'br':
-           l.includes('risk')||l.includes('pending')||l.includes('draft')||l.includes('concept')||l.includes('hold')?'bo':
+           l.includes('risk')||l.includes('pending')||l.includes('draft')||l.includes('concept')||l.includes('hold')||l.includes('review')?'bo':
            l.includes('track')||l.includes('paid')||l.includes('complet')||l.includes('handed')||l.includes('deliver')?'bg':
-           l.includes('progress')||l.includes('certif')||l.includes('issued')||l.includes('approved')||l.includes('construction')||l.includes('lpo')?'bb':
-           l.includes('design')||l.includes('tender')?'bd':'bd';
+           l.includes('progress')||l.includes('certif')||l.includes('issued')||l.includes('approved')||l.includes('construction')||l.includes('lpo')||l.includes('under review')?'bb':
+           'bd';
   return `<span class="badge ${c}">${s}</span>`;
 }
-function hbadge(h,f){
-  const v=h||f||'';
-  const l=v.toLowerCase();
-  const c=l.includes('delay')?'br':l.includes('risk')?'bo':l.includes('track')?'bg':'bd';
-  return v?`<span class="badge ${c}">${v}</span>`:'<span class="badge bd">—</span>';
-}
+function hbadge(h,f){const v=h||f||'';if(!v||v==='null')return'<span class="badge bd">—</span>';const l=v.toLowerCase();const c=l.includes('delay')?'br':l.includes('risk')?'bo':l.includes('track')?'bg':'bd';return`<span class="badge ${c}">${v}</span>`;}
 
-// ── FETCH ─────────────────────────────────────
-async function fetchSheet(name) {
-  try {
+// ═══════════════════════════════════════════
+// FETCH — fix gviz date format
+// ═══════════════════════════════════════════
+async function fetchSheet(name){
+  try{
     const r=await fetch(BASE+encodeURIComponent(name));
     const txt=await r.text();
     const json=JSON.parse(txt.replace(/^[^{]*/,'').replace(/[^}]*$/,''));
     const cols=json.table.cols.map(c=>c.label);
-    return (json.table.rows||[]).map(row=>
-      Object.fromEntries(cols.map((c,i)=>[c,row.c?.[i]?.v??row.c?.[i]?.f??'']))
-    ).filter(row=>Object.values(row).some(v=>v!==''&&v!==null));
-  } catch(e){ return []; }
+    return (json.table.rows||[]).map(row=>{
+      const obj={};
+      cols.forEach((c,i)=>{
+        const cell=row.c?.[i];
+        if(!cell){obj[c]='';return;}
+        // For date cells: use formatted value (.f) not raw Date() string (.v)
+        const raw=cell.v;
+        const fmt2=cell.f;
+        if(raw!==null&&raw!==undefined&&String(raw).startsWith('Date(')){
+          // Convert to readable date string
+          obj[c]=String(raw); // keep Date() string — our parseDate() handles it
+        } else {
+          obj[c]=raw??fmt2??'';
+        }
+      });
+      return obj;
+    }).filter(row=>Object.values(row).some(v=>v!==''&&v!==null));
+  }catch(e){return[];}
 }
 
-function animateNum(el, endVal, prefix='', suffix='') {
-  const duration = 1200;
-  let start = null;
-  const easeOut = t => 1 - Math.pow(1 - t, 3);
-  const step = ts => {
-    if(!start) start = ts;
-    const p = Math.min((ts - start) / duration, 1);
-    const cur = endVal * easeOut(p);
-    el.textContent = prefix + (cur >= 1000000 ? (cur/1000000).toFixed(1)+'M' : cur >= 1000 ? Math.round(cur/1000)+'K' : Math.round(cur).toLocaleString()) + suffix;
-    if(p < 1) requestAnimationFrame(step);
-    else el.textContent = prefix + (endVal >= 1000000 ? (endVal/1000000).toFixed(1)+'M' : endVal >= 1000 ? Math.round(endVal/1000)+'K' : Math.round(endVal).toLocaleString()) + suffix;
-  };
-  requestAnimationFrame(step);
-}
-function animateKPIs() {
-  document.querySelectorAll('.kv[data-val]').forEach(el => {
-    const v = parseFloat(el.dataset.val) || 0;
-    animateNum(el, v);
-  });
-}
-
-async function loadAll() {
+async function loadAll(){
   const names=['Projects','IPC Log','NOC Tracker','Stages','Milestones','Activities','Orders','Budget Summary'];
   const res=await Promise.all(names.map(s=>fetchSheet(s)));
   names.forEach((s,i)=>D[s]=res[i]);
@@ -504,680 +562,702 @@ async function loadAll() {
   buildAll();
 }
 
-// ── TABS ───────────────────────────────────────
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
 function go(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.dtab,.mnav-item').forEach(t=>t.classList.remove('active'));
   document.getElementById('p-'+id).classList.add('active');
-  el.classList.add('active');
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-
+function gotoProject(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dtab,.mnav-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('p-project').classList.add('active');
+  document.getElementById('proj-select').value=name;
+  buildProject();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 function toggleTV(){document.body.classList.toggle('tv-mode');}
 
-// ── CHART HELPER ───────────────────────────────
-function makeDonut(id, labels, data, colors) {
-  if(CHARTS[id]) CHARTS[id].destroy();
-  const ctx=document.getElementById(id);
-  if(!ctx) return;
-  CHARTS[id]=new Chart(ctx,{
-    type:'doughnut',
-    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:1,borderColor:'rgba(0,0,0,.3)'}]},
-    options:{
-      responsive:true,maintainAspectRatio:false,cutout:'62%',
-      layout:{padding:10},
-      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:12,font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.raw}`}}},
-    }
-  });
+// ═══════════════════════════════════════════
+// CHART HELPERS
+// ═══════════════════════════════════════════
+function makeDonut(id,labels,data,colors){
+  if(CHARTS[id])CHARTS[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  CHARTS[id]=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:1,borderColor:colors.map(()=>'rgba(255,255,255,.8)')}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:9,padding:10,font:{size:11}}}}}});
+}
+function makeBar(id,labels,datasets,opts={}){
+  if(CHARTS[id])CHARTS[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  CHARTS[id]=new Chart(ctx,{type:'bar',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:datasets.length>1,labels:{boxWidth:9,padding:8,font:{size:10}}}},scales:{x:{ticks:{font:{size:9},maxRotation:30},grid:{color:'rgba(0,0,0,.05)'}},y:{ticks:{font:{size:9},callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,.05)'},...(opts.y||{})}}}});
+}
+function makeHBar(id,labels,data,colors){
+  if(CHARTS[id])CHARTS[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  CHARTS[id]=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:3,borderWidth:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.05)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}}});
 }
 
-function makeBar(id, labels, datasets, opts={}) {
-  if(CHARTS[id]) CHARTS[id].destroy();
-  const ctx=document.getElementById(id);
-  if(!ctx) return;
-  CHARTS[id]=new Chart(ctx,{
-    type:'bar',
-    data:{labels,datasets},
-    options:{
-      responsive:true,maintainAspectRatio:true,
-      plugins:{legend:{display:datasets.length>1,labels:{boxWidth:10,padding:10,font:{size:10}}}},
-      scales:{
-        x:{ticks:{font:{size:9},maxRotation:30},grid:{color:'rgba(0,0,0,.06)'}},
-        y:{ticks:{font:{size:9},callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,.06)'},...(opts.y||{})}
-      },
-      ...opts
-    }
-  });
+// ═══════════════════════════════════════════
+// TABLE HELPER
+// ═══════════════════════════════════════════
+function tbl(heads, rows){
+  return `<thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):
+  `<tr><td colspan="${heads.length}" class="empty">No data</td></tr>`}</tbody>`;
 }
 
-function makeHBar(id, labels, data, color) {
-  if(CHARTS[id]) CHARTS[id].destroy();
-  const ctx=document.getElementById(id);
-  if(!ctx) return;
-  CHARTS[id]=new Chart(ctx,{
-    type:'bar',
-    data:{labels,datasets:[{data,backgroundColor:color||'rgba(47,127,255,.7)',borderRadius:3,borderWidth:0}]},
-    options:{
-      indexAxis:'y',responsive:true,maintainAspectRatio:true,
-      plugins:{legend:{display:false}},
-      scales:{x:{max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.06)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}
-    }
-  });
-}
+// ═══════════════════════════════════════════
+// BUILD ALL
+// ═══════════════════════════════════════════
+function buildAll(){buildExec();buildFinance();buildConstruction();buildProcurement();buildNOC();populateProjectSelect();}
 
-// ── BUILD ALL ──────────────────────────────────
-function buildAll(){ buildExec(); buildFinance(); buildConstruction(); buildProcurement(); buildNOC(); populateProjectSelect(); setTimeout(animateKPIs,200); }
-
-// ── PAGE 1: EXECUTIVE ─────────────────────────
-function buildExec() {
-  const P=D['Projects']||[], IPC=D['IPC Log']||[], A=D['Activities']||[], O=D['Orders']||[], BS=D['Budget Summary']||[];
+// ═══════════════════════════════════════════
+// PAGE 1 — EXECUTIVE
+// ═══════════════════════════════════════════
+function buildExec(){
+  const P=D['Projects']||[],IPC=D['IPC Log']||[],A=D['Activities']||[],O=D['Orders']||[],BS=D['Budget Summary']||[];
   const real=P.filter(p=>p['Project Name']&&!['null','test','test '].includes(String(p['Project Name']).trim().toLowerCase()));
 
-  const constr=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('construction'));
-  const delayed=real.filter(p=>{const h=(p['Health Status']||p['Auto Health Flag']||'').toLowerCase();return h.includes('delay');});
-  const atRisk=real.filter(p=>{const h=(p['Health Status']||p['Auto Health Flag']||'').toLowerCase();return h.includes('risk');});
-
+  const constr=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('construction')).length;
+  const delayed=real.filter(p=>(p['Health Status']||p['Auto Health Flag']||'').toLowerCase().includes('delay')).length;
+  const atRisk=real.filter(p=>(p['Health Status']||p['Auto Health Flag']||'').toLowerCase().includes('risk')).length;
   const dueWk=IPC.filter(r=>inR(r['Payment Due Date'],WK));
   const dueMo=IPC.filter(r=>inR(r['Payment Due Date'],MO));
-  const outstanding=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid');
+  const outAmt=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').reduce((s,r)=>s+n(r['Net Due']),0);
   const dueWkAmt=dueWk.reduce((s,r)=>s+n(r['Net Due']),0);
   const dueMoAmt=dueMo.reduce((s,r)=>s+n(r['Net Due']),0);
-  const outAmt=outstanding.reduce((s,r)=>s+n(r['Net Due']),0);
-
   const castWk=A.filter(a=>a['Is Casting Activity']==='Yes'&&inR(a['Planned Start Date'],WK));
   const castMo=A.filter(a=>a['Is Casting Activity']==='Yes'&&inR(a['Planned Start Date'],MO));
-  const castWkCost=castWk.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
   const castMoCost=castMo.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
-
   const llCrit=O.filter(o=>o['Long Lead Item']==='Yes'&&(o['Procurement Status']||'').toLowerCase()==='not ordered');
   const totalCV=BS.reduce((s,b)=>s+n(b['Revised Contract Value']),0);
 
-  document.getElementById('e-kpis').innerHTML=`
-    <div class="kpi cr"><div class="kl">Due This Week</div><div class="kv">${fmt(dueWkAmt)}</div><div class="ks">AED · ${dueWk.length} IPCs</div></div>
-    <div class="kpi co"><div class="kl">Due This Month</div><div class="kv">${fmt(dueMoAmt)}</div><div class="ks">AED · ${dueMo.length} IPCs</div></div>
-    <div class="kpi cb"><div class="kl">Total Outstanding</div><div class="kv">${fmt(outAmt)}</div><div class="ks">AED unpaid</div></div>
-    <div class="kpi co"><div class="kl">Castings This Week</div><div class="kv">${castWk.length}</div><div class="ks">${fmt(castWkCost)} AED est.</div></div>
-    <div class="kpi cd"><div class="kl">Castings This Month</div><div class="kv">${castMo.length}</div><div class="ks">${fmt(castMoCost)} AED est.</div></div>
-    <div class="kpi cg"><div class="kl">Under Construction</div><div class="kv">${constr.length}</div><div class="ks">${real.length} total projects</div></div>
-    <div class="kpi cr"><div class="kl">Delayed Projects</div><div class="kv">${delayed.length}</div><div class="ks">${atRisk.length} at risk</div></div>
-    <div class="kpi cb"><div class="kl">Total Portfolio Value</div><div class="kv">${fmt(totalCV)}</div><div class="ks">AED revised</div></div>
-    <div class="kpi cr"><div class="kl">LL Critical</div><div class="kv">${llCrit.length}</div><div class="ks">not ordered</div></div>
-  `;
+  document.getElementById('e-kpis').innerHTML=[
+    ['cr','Due This Week',fmt(dueWkAmt),'AED · '+dueWk.length+' IPCs'],
+    ['co','Due This Month',fmt(dueMoAmt),'AED · '+dueMo.length+' IPCs'],
+    ['cb','Total Outstanding',fmt(outAmt),'AED unpaid'],
+    ['co','Castings This Week',castWk.length,fmt(castWk.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0))+' AED'],
+    ['cd','Castings This Month',castMo.length,fmt(castMoCost)+' AED est.'],
+    ['cg','Under Construction',constr,real.length+' total projects'],
+    ['cr','Delayed',delayed,atRisk+' at risk'],
+    ['cb','Portfolio Value',fmt(totalCV),'AED revised'],
+    ['cr','LL Critical',llCrit.length,'not ordered'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
 
-  // Health donut chart
-  const onTrack=real.filter(p=>{const h=(p['Health Status']||p['Auto Health Flag']||'').toLowerCase();return h.includes('track');}).length;
+  // Charts
   setTimeout(()=>{
-    makeDonut('chart-health',
-      ['On Track','At Risk','Delayed','Other'],
-      [onTrack,atRisk.length,delayed.length,real.length-onTrack-atRisk.length-delayed.length],
-      ['rgba(0,212,138,.8)','rgba(255,122,42,.8)','rgba(255,51,82,.8)','rgba(74,101,133,.5)']
-    );
-    // Payment donut
+    const onTrack=real.filter(p=>(p['Health Status']||p['Auto Health Flag']||'').toLowerCase().includes('track')).length;
+    makeDonut('chart-health',['On Track','At Risk','Delayed','Other'],[onTrack,atRisk,delayed,real.length-onTrack-atRisk-delayed],['#16a34a','#ea580c','#dc2626','#94a3b8']);
     const paid=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='paid').reduce((s,r)=>s+n(r['Net Due']),0);
     const pend=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='pending').reduce((s,r)=>s+n(r['Net Due']),0);
     const cert=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='certified').reduce((s,r)=>s+n(r['Net Due']),0);
-    makeDonut('chart-payment',
-      ['Paid','Pending','Certified'],
-      [Math.round(paid),Math.round(pend),Math.round(cert)],
-      ['rgba(0,212,138,.8)','rgba(255,51,82,.8)','rgba(47,127,255,.8)']
-    );
+    makeDonut('chart-payment',['Paid','Pending','Certified'],[Math.round(paid),Math.round(pend),Math.round(cert)],['#16a34a','#dc2626','#2563eb']);
   },100);
 
-  // Projects table
-  document.getElementById('e-projects').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>All Projects</span><span class="cc">${real.length} projects</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Emirate</th><th>Status</th><th>Health</th><th>Progress</th><th>Delay</th><th>Next Milestone</th></tr></thead>
-    <tbody>${real.map(p=>`<tr>
-      <td style="cursor:pointer" data-proj="${p['Project Name']}"><div style="font-weight:700;font-size:12px;color:#2563eb">${p['Project Name']}</div><div class="sm">${p['Building Description']||''}</div></td>
+  // Projects — desktop table
+  document.getElementById('e-proj-count').textContent=real.length+' projects';
+  document.getElementById('e-proj-tbl').innerHTML=tbl(
+    ['Project','Emirate','Status','Health','Progress','Delay','Next Milestone'],
+    real.map(p=>`<tr>
+      <td data-proj="${p['Project Name']}" style="cursor:pointer"><div style="font-weight:700;font-size:12px;color:var(--bl)">${p['Project Name']}</div><div class="sm">${p['Building Description']||''}</div></td>
       <td class="sm">${p['Emirate']||'—'}</td>
       <td>${badge(p['Project Status'])}</td>
       <td>${hbadge(p['Health Status'],p['Auto Health Flag'])}</td>
-      <td>${bar(p['Overall Progress %'])}</td>
-      <td style="font-family:var(--mn);font-size:10px;color:${n(p['Total Delay'])>0?'var(--red)':'#64748b'}">${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+'d':'—'}</td>
-      <td class="sm">${p['Next Milestone']||'—'}<br><span style="color:#64748b">${fd(p['Next Milestone Date'])}</span></td>
-    </tr>`).join('')||'<tr><td colspan="7" class="empty">No projects</td></tr>'}</tbody></table></div>`;
+      <td style="min-width:90px">${bar(p['Overall Progress %'])}</td>
+      <td style="font-family:var(--mn);font-size:10px;color:${n(p['Total Delay'])>0?'var(--red)':'var(--dim)'}">${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+'d':'—'}</td>
+      <td class="sm">${p['Next Milestone']||'—'}</td>
+    </tr>`)
+  );
 
-  // Casting schedule
-  const castAll=[...castWk,...castMo.filter(a=>!inR(a['Planned Start Date'],WK))].sort((a,b)=>new Date(a['Planned Start Date'])-new Date(b['Planned Start Date']));
-  document.getElementById('e-castings').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Casting Schedule — This Month</span><span class="cc">${castMo.length} castings · ${fmt(castMoCost)} AED</span></div>
-    <div class="scroll" style="max-height:280px">
-    ${castAll.length?castAll.map(a=>{
-      const cost=n(a['Estimated Concrete Cost (AED)']);
-      const iw=inR(a['Planned Start Date'],WK);
-      return `<div class="ci" style="${iw?'background:#fff7ed':''}">
-        <div>${iw?'<div class="tag-w">THIS WEEK</div>':''}<div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</div><div class="ci-m">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}${a['Assigned Contractor']?' · '+a['Assigned Contractor']:''}</div></div>
-        <div style="text-align:right"><div class="ci-d">${fds(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${cost?`<div class="ci-c">${fmt(cost)} AED</div>`:''}${badge(a['Status'])}</div>
-      </div>`;
-    }).join(''):`<div class="empty">No castings this month</div>`}
+  // Projects — mobile cards
+  document.getElementById('e-proj-cards').innerHTML=real.map(p=>`
+    <div class="mcard" data-proj="${p['Project Name']}" style="cursor:pointer">
+      <div class="mcard-row" style="margin-bottom:4px">
+        <div class="mcard-proj-link">${p['Project Name']}</div>
+        ${hbadge(p['Health Status'],p['Auto Health Flag'])}
+      </div>
+      <div class="mcard-sub">${p['Building Description']||''} · ${p['Emirate']||'—'}</div>
+      <div class="mcard-row">
+        ${badge(p['Project Status'])}
+        <span style="font-size:11px;color:${n(p['Total Delay'])>0?'var(--red)':'var(--dim)'}">
+          ${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+' days delay':'—'}
+        </span>
+      </div>
+      <div class="mcard-bar">
+        <div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-size:11px;font-family:var(--mn);color:var(--dark)">${pct(p['Overall Progress %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(p['Overall Progress %'])}%;background:${bc(p['Overall Progress %'])}"></div></div>
+      </div>
+      <div class="mcard-row" style="margin-top:6px">
+        <span class="mcard-label">Next milestone</span>
+        <span style="font-size:11px;color:var(--dark)">${p['Next Milestone']||'—'}</span>
+      </div>
+    </div>`).join('');
+
+  // Castings
+  const castAll=[...castWk,...castMo.filter(a=>!inR(a['Planned Start Date'],WK))].sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date']));
+  document.getElementById('e-cast-count').textContent=castMo.length+' castings · '+fmt(castMoCost)+' AED';
+  document.getElementById('e-castings').innerHTML=castAll.length?castAll.map(a=>{
+    const cost=n(a['Estimated Concrete Cost (AED)']);
+    const iw=inR(a['Planned Start Date'],WK);
+    return `<div class="ci" style="${iw?'background:#fff7ed':''}">
+      <div>${iw?'<div class="tag-w">THIS WEEK</div>':''}<div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</div><div class="ci-m">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}${a['Assigned Contractor']?' · '+a['Assigned Contractor']:''}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div class="ci-d">${fds(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${cost?`<div class="ci-c">${fmt(cost)} AED</div>`:''}${badge(a['Status'])}</div>
     </div>`;
+  }).join(''):'<div class="empty">No castings this month</div>';
 
   // Activities this week
   const actsWk=A.filter(a=>a['Is Casting Activity']!=='Yes'&&inR(a['Planned Start Date'],WK));
-  document.getElementById('e-activities').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Construction Activities — This Week</span><span class="cc">${actsWk.length} activities</span></div>
-    <div class="scroll" style="max-height:200px">
-    <table class="tbl"><thead><tr><th>Project</th><th>Activity</th><th>Stage</th><th>Contractor</th><th>Start</th><th>Status</th></tr></thead>
-    <tbody>${actsWk.length?actsWk.map(a=>`<tr>
-      <td class="sm">${a['Project Name']||'—'}</td>
-      <td style="font-weight:600;font-size:12px">${a['Activity Name']||'—'}</td>
-      <td class="sm">${a['Stage Label']||'—'}</td>
-      <td class="sm">${a['Assigned Contractor']||'—'}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td>
-      <td>${badge(a['Status'])}</td>
-    </tr>`).join(''):`<tr><td colspan="6" class="empty">No activities this week</td></tr>`}</tbody></table></div>`;
+  document.getElementById('e-act-count').textContent=actsWk.length+' activities';
+  document.getElementById('e-act-tbl').innerHTML=tbl(
+    ['Project','Activity','Stage','Contractor','Start','Status'],
+    actsWk.map(a=>`<tr><td class="sm">${a['Project Name']||'—'}</td><td style="font-weight:600">${a['Activity Name']||'—'}</td><td class="sm">${a['Stage Label']||'—'}</td><td class="sm">${a['Assigned Contractor']||'—'}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td><td>${badge(a['Status'])}</td></tr>`)
+  );
+  document.getElementById('e-act-cards').innerHTML=actsWk.length?actsWk.map(a=>`
+    <div class="mcard">
+      <div class="mcard-row"><span class="mcard-proj-link">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div>
+      <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Contractor</div><div class="mcard-item-val">${a['Assigned Contractor']||'—'}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Start Date</div><div class="mcard-item-val">${fds(a['Planned Start Date'])}</div></div>
+      </div>
+    </div>`).join(''):'<div class="empty">No activities this week</div>';
 
   // Long lead
-  document.getElementById('e-ll').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>Long Lead — Action Required</span><span class="cc">${llCrit.length} items</span></div>
-    ${llCrit.length?`<div class="scroll" style="max-height:150px"><table class="tbl"><thead><tr><th>Project</th><th>Item</th><th>Lead Time</th><th>Order By</th></tr></thead>
-    <tbody>${llCrit.map(o=>`<tr>
-      <td class="sm">${o['Project Name']||'—'}</td>
-      <td style="font-weight:600;font-size:11px">${o['Order Description']||'—'}</td>
-      <td class="sm">${o['Lead Time']||'—'} wks</td>
-      <td style="font-family:var(--mn);font-size:10px;color:var(--red)">${fd(o['Order By Date'])}</td>
-    </tr>`).join('')}</tbody></table></div>`:
-    `<div class="empty">No critical items</div>`}`;
+  document.getElementById('e-ll-count').textContent=llCrit.length+' items';
+  document.getElementById('e-ll-tbl').innerHTML=tbl(
+    ['Project','Item','Lead Time','Order By'],
+    llCrit.map(o=>`<tr><td class="sm">${o['Project Name']||'—'}</td><td style="font-weight:600">${o['Order Description']||'—'}</td><td class="sm">${o['Lead Time']||'—'} wks</td><td style="font-family:var(--mn);font-size:10px;color:var(--red)">${fd(o['Order By Date'])}</td></tr>`)
+  );
+  document.getElementById('e-ll-cards').innerHTML=llCrit.length?llCrit.map(o=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span><span class="badge br">ACTION</span></div>
+      <div class="mcard-sub">${o['Project Name']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Lead Time</div><div class="mcard-item-val">${o['Lead Time']||'—'} wks</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val" style="color:var(--red)">${fd(o['Order By Date'])}</div></div>
+      </div>
+    </div>`).join(''):'<div class="empty">No critical items</div>';
 }
 
-// ── PAGE 2: FINANCE ──────────────────────────
-function buildFinance() {
-  const IPC=D['IPC Log']||[], BS=D['Budget Summary']||[];
-
+// ═══════════════════════════════════════════
+// PAGE 2 — FINANCE
+// ═══════════════════════════════════════════
+function buildFinance(){
+  const IPC=D['IPC Log']||[],BS=D['Budget Summary']||[];
   const totalCV=BS.reduce((s,b)=>s+n(b['Revised Contract Value']),0);
   const totalPaid=BS.reduce((s,b)=>s+n(b['Total IPC Paid']),0);
-  const totalCert=BS.reduce((s,b)=>s+n(b['Total IPC Certified']),0);
   const totalBal=BS.reduce((s,b)=>s+n(b['Balance Remaining']),0);
   const dueWkAmt=IPC.filter(r=>inR(r['Payment Due Date'],WK)).reduce((s,r)=>s+n(r['Net Due']),0);
   const dueMoAmt=IPC.filter(r=>inR(r['Payment Due Date'],MO)).reduce((s,r)=>s+n(r['Net Due']),0);
   const totalPend=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='pending').reduce((s,r)=>s+n(r['Net Due']),0);
+  const totalCert=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()==='certified').reduce((s,r)=>s+n(r['Net Due']),0);
 
-  document.getElementById('f-kpis').innerHTML=`
-    <div class="kpi cb"><div class="kl">Total Portfolio Value</div><div class="kv">${fmt(totalCV)}</div><div class="ks">AED revised</div></div>
-    <div class="kpi cg"><div class="kl">Total Paid</div><div class="kv">${fmt(totalPaid)}</div><div class="ks">AED to contractor</div></div>
-    <div class="kpi cb"><div class="kl">Total Certified</div><div class="kv">${fmt(totalCert)}</div><div class="ks">AED certified</div></div>
-    <div class="kpi co"><div class="kl">Balance Remaining</div><div class="kv">${fmt(totalBal)}</div><div class="ks">AED to pay</div></div>
-    <div class="kpi cr"><div class="kl">Due This Week</div><div class="kv">${fmt(dueWkAmt)}</div><div class="ks">AED</div></div>
-    <div class="kpi co"><div class="kl">Due This Month</div><div class="kv">${fmt(dueMoAmt)}</div><div class="ks">AED</div></div>
-    <div class="kpi cr"><div class="kl">Pending Payment</div><div class="kv">${fmt(totalPend)}</div><div class="ks">AED</div></div>
-  `;
+  document.getElementById('f-kpis').innerHTML=[
+    ['cb','Portfolio Value',fmt(totalCV),'AED revised'],
+    ['cg','Total Paid',fmt(totalPaid),'AED'],
+    ['co','Balance Remaining',fmt(totalBal),'AED'],
+    ['cr','Due This Week',fmt(dueWkAmt),'AED'],
+    ['co','Due This Month',fmt(dueMoAmt),'AED'],
+    ['cr','Pending Payment',fmt(totalPend),'AED'],
+    ['cb','Certified',fmt(totalCert),'AED'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
 
-  // Budget per project
   const bData=BS.filter(b=>b['Project Name']&&b['Project Name']!=='null');
-  document.getElementById('f-budget').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget per Project</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Status</th><th style="text-align:right">Contract</th><th style="text-align:right">Certified</th><th style="text-align:right">Paid</th><th style="text-align:right">Balance</th><th>Progress</th></tr></thead>
-    <tbody>${bData.map(b=>`<tr>
-      <td style="font-weight:700;font-size:12px">${b['Project Name']}</td>
+
+  // Budget table
+  document.getElementById('f-budget-tbl').innerHTML=tbl(
+    ['Project','Status','Contract','Certified','Paid','Balance','Progress'],
+    bData.map(b=>`<tr>
+      <td style="font-weight:700">${b['Project Name']}</td>
       <td>${badge(b['Project Status'])}</td>
       <td class="n sm">${fmt(b['Revised Contract Value'])} AED</td>
       <td class="n sm" style="color:var(--bl)">${fmt(b['Total IPC Certified'])} AED</td>
       <td class="n sm" style="color:var(--gn)">${fmt(b['Total IPC Paid'])} AED</td>
       <td class="n sm" style="color:var(--og)">${fmt(b['Balance Remaining'])} AED</td>
       <td>${bar(b['Financial Progress %'])}</td>
-    </tr>`).join('')||'<tr><td colspan="7" class="empty">No budget data — run sync</td></tr>'}</tbody></table></div>`;
+    </tr>`)
+  );
+  // Budget mobile cards
+  document.getElementById('f-budget-cards').innerHTML=bData.map(b=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${b['Project Name']}</span>${badge(b['Project Status'])}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Contract</div><div class="mcard-item-val">${fmt(b['Revised Contract Value'])} AED</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Paid</div><div class="mcard-item-val" style="color:var(--gn)">${fmt(b['Total IPC Paid'])} AED</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Certified</div><div class="mcard-item-val" style="color:var(--bl)">${fmt(b['Total IPC Certified'])} AED</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Balance</div><div class="mcard-item-val" style="color:var(--og)">${fmt(b['Balance Remaining'])} AED</div></div>
+      </div>
+      <div class="mcard-bar" style="margin-top:8px">
+        <div class="mcard-bar-top"><span class="mcard-label">Financial Progress</span><span style="font-size:11px;font-family:var(--mn)">${pct(b['Financial Progress %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(b['Financial Progress %'])}%;background:${bc(b['Financial Progress %'])}"></div></div>
+      </div>
+    </div>`).join('');
 
   // Bar chart
   setTimeout(()=>{
-    const labels=bData.slice(0,8).map(b=>b['Project Name'].replace(/ RESIDENCE| TOWER| HOUSE/gi,'').substring(0,12));
-    makeBar('chart-budget-bar', labels, [
-      {label:'Contract',data:bData.slice(0,8).map(b=>n(b['Revised Contract Value'])),backgroundColor:'rgba(47,127,255,.6)',borderRadius:3},
-      {label:'Paid',data:bData.slice(0,8).map(b=>n(b['Total IPC Paid'])),backgroundColor:'rgba(0,212,138,.6)',borderRadius:3},
+    makeBar('chart-budget-bar',bData.slice(0,8).map(b=>b['Project Name'].substring(0,10)),[
+      {label:'Contract',data:bData.slice(0,8).map(b=>n(b['Revised Contract Value'])),backgroundColor:'rgba(37,99,235,.6)',borderRadius:3},
+      {label:'Paid',data:bData.slice(0,8).map(b=>n(b['Total IPC Paid'])),backgroundColor:'rgba(22,163,74,.6)',borderRadius:3},
     ]);
   },100);
 
   // Upcoming payments
-  const upcoming=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').sort((a,b)=>new Date(a['Payment Due Date'])-new Date(b['Payment Due Date']));
-  document.getElementById('f-upcoming').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Upcoming Payments</span><span class="cc">${upcoming.length} pending</span></div>
-    <div class="scroll" style="max-height:220px">
-    <table class="tbl"><thead><tr><th>Project</th><th>IPC</th><th>Due</th><th>Status</th><th class="n">Net Due</th></tr></thead>
-    <tbody>${upcoming.map(r=>{
-      const iw=inR(r['Payment Due Date'],WK), im=inR(r['Payment Due Date'],MO);
-      return `<tr style="${iw?'background:rgba(255,51,82,.04)':''}">
-        <td style="font-weight:600;font-size:11px">${r['Project Name']||'—'}</td>
+  const upcoming=IPC.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').sort((a,b)=>parseDate(a['Payment Due Date'])-parseDate(b['Payment Due Date']));
+  document.getElementById('f-upcoming-count').textContent=upcoming.length+' pending';
+  document.getElementById('f-upcoming-tbl').innerHTML=tbl(
+    ['Project','IPC','Due','Status','Net Due'],
+    upcoming.map(r=>{
+      const iw=inR(r['Payment Due Date'],WK),im=inR(r['Payment Due Date'],MO);
+      return `<tr style="${iw?'background:#fff7ed':''}">
+        <td style="font-weight:600">${r['Project Name']||'—'}</td>
         <td class="sm">${r['IPC Number']||'—'}</td>
-        <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}${iw?'<br><span class="badge br" style="font-size:8px">THIS WEEK</span>':im?'<br><span class="badge bo" style="font-size:8px">THIS MONTH</span>':''}</td>
+        <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}${iw?'<br><span class="badge br" style="font-size:8px">WEEK</span>':im?'<br><span class="badge bo" style="font-size:8px">MONTH</span>':''}</td>
         <td>${badge(r['Payment Status'])}</td>
         <td class="n" style="font-weight:700;font-family:var(--mn);color:var(--red)">${fmtAED(r['Net Due'])}</td>
-      </tr>`;
-    }).join('')||'<tr><td colspan="5" class="empty">All paid</td></tr>'}</tbody></table></div>`;
+      </tr>`;})
+  );
+  document.getElementById('f-upcoming-cards').innerHTML=upcoming.map(r=>` 
+    <div class="mcard" style="${inR(r['Payment Due Date'],WK)?'border-left:3px solid var(--red);':''}">
+      <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${r['Project Name']||'—'}</span>${badge(r['Payment Status'])}</div>
+      <div class="mcard-row" style="margin-top:6px">
+        <span class="mcard-label">${r['IPC Number']||'—'} · Due ${fd(r['Payment Due Date'])}</span>
+        <span style="font-weight:700;font-family:var(--mn);color:var(--red);font-size:13px">${fmtAED(r['Net Due'])}</span>
+      </div>
+    </div>`).join('');
 
-  // Full IPC
-  const all=IPC.filter(r=>r['IPC Number']&&r['IPC Number']!=='null').sort((a,b)=>new Date(b['Payment Due Date'])-new Date(a['Payment Due Date']));
-  document.getElementById('f-ipc').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Full IPC Log</span><span class="cc">${all.length} records</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>IPC No</th><th>Work Covered</th><th>Due Date</th><th>Paid Date</th><th>Status</th><th class="n">Gross</th><th class="n">Net Due</th></tr></thead>
-    <tbody>${all.map(r=>`<tr>
-      <td style="font-weight:600;font-size:12px">${r['Project Name']||'—'}</td>
+  // IPC log
+  const all=IPC.filter(r=>r['IPC Number']&&r['IPC Number']!=='null').sort((a,b)=>parseDate(b['Payment Due Date'])-parseDate(a['Payment Due Date']));
+  document.getElementById('f-ipc-count').textContent=all.length+' IPCs';
+  document.getElementById('f-ipc-tbl').innerHTML=tbl(
+    ['Project','IPC','Work Covered','Due Date','Paid Date','Status','Net Due'],
+    all.map(r=>`<tr>
+      <td style="font-weight:600">${r['Project Name']||'—'}</td>
       <td style="font-family:var(--mn);font-size:10px">${r['IPC Number']||'—'}</td>
-      <td class="sm" style="max-width:200px">${String(r['Work Covered']||'—').substring(0,55)}</td>
+      <td class="sm" style="max-width:180px">${String(r['Work Covered']||'—').substring(0,55)}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(r['Actual Payment Date'])}</td>
       <td>${badge(r['Payment Status'])}</td>
-      <td class="n sm">${fmtAED(r['Gross Amount'])}</td>
       <td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td>
-    </tr>`).join('')||'<tr><td colspan="8" class="empty">No IPC records</td></tr>'}</tbody></table></div>`;
+    </tr>`)
+  );
+  document.getElementById('f-ipc-cards').innerHTML=all.map(r=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${r['Project Name']||'—'} — ${r['IPC Number']||'—'}</span>${badge(r['Payment Status'])}</div>
+      <div class="mcard-sub">${String(r['Work Covered']||'').substring(0,60)}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Due Date</div><div class="mcard-item-val">${fd(r['Payment Due Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Net Due</div><div class="mcard-item-val" style="color:var(--red)">${fmtAED(r['Net Due'])}</div></div>
+      </div>
+    </div>`).join('');
 }
 
-// ── PAGE 3: CONSTRUCTION ──────────────────────
-function buildConstruction() {
-  const S=D['Stages']||[], M=D['Milestones']||[], A=D['Activities']||[];
+// ═══════════════════════════════════════════
+// PAGE 3 — CONSTRUCTION
+// ═══════════════════════════════════════════
+function buildConstruction(){
+  const S=D['Stages']||[],M=D['Milestones']||[],A=D['Activities']||[];
   const inProg=S.filter(s=>(s['Status']||'').toLowerCase().includes('progress')).length;
   const comp=S.filter(s=>(s['Status']||'').toLowerCase().includes('complet')).length;
   const castMo=A.filter(a=>a['Is Casting Activity']==='Yes'&&inR(a['Planned Start Date'],MO));
   const castMoCost=castMo.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
   const delM=M.filter(m=>n(m['Variance Days'])>0).length;
 
-  document.getElementById('c-kpis').innerHTML=`
-    <div class="kpi cg"><div class="kl">Stages In Progress</div><div class="kv">${inProg}</div><div class="ks">active</div></div>
-    <div class="kpi cb"><div class="kl">Stages Complete</div><div class="kv">${comp}</div><div class="ks">done</div></div>
-    <div class="kpi cr"><div class="kl">Delayed Milestones</div><div class="kv">${delM}</div><div class="ks">variance > 0</div></div>
-    <div class="kpi co"><div class="kl">Castings This Month</div><div class="kv">${castMo.length}</div><div class="ks">pours planned</div></div>
-    <div class="kpi cd"><div class="kl">Casting Cost (Month)</div><div class="kv">${fmt(castMoCost)}</div><div class="ks">AED estimated</div></div>
-  `;
+  document.getElementById('c-kpis').innerHTML=[
+    ['cg','In Progress',inProg,'stages active'],
+    ['cb','Complete',comp,'stages done'],
+    ['cr','Delayed Milestones',delM,'variance > 0'],
+    ['co','Castings This Month',castMo.length,'pours planned'],
+    ['cd','Casting Cost',fmt(castMoCost),'AED estimated'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
 
   // Castings
-  const castAll=A.filter(a=>a['Is Casting Activity']==='Yes').sort((a,b)=>new Date(a['Planned Start Date'])-new Date(b['Planned Start Date']));
-  document.getElementById('c-castings').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Slab Casting Schedule — All</span><span class="cc">${castAll.length} total</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Element</th><th>Stage</th><th>Milestone</th><th>Contractor</th><th>Planned Date</th><th>Actual Cast Date</th><th>Volume (m³)</th><th style="text-align:right">Est. Cost</th><th>Status</th></tr></thead>
-    <tbody>${castAll.length?castAll.map(a=>`<tr>
+  const castAll=A.filter(a=>a['Is Casting Activity']==='Yes').sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date']));
+  document.getElementById('c-cast-count').textContent=castAll.length+' total';
+  document.getElementById('c-cast-tbl').innerHTML=tbl(
+    ['Project','Element','Stage','Contractor','Planned Date','Volume','Est. Cost','Status'],
+    castAll.map(a=>`<tr>
       <td class="sm">${a['Project Name']||'—'}</td>
-      <td style="font-weight:700;font-size:12px">${a['Cast Element']||a['Activity Name']||'—'}</td>
+      <td style="font-weight:700">${a['Cast Element']||a['Activity Name']||'—'}</td>
       <td class="sm">${a['Stage Label']||'—'}</td>
-      <td class="sm">${a['Milestone Label']||'—'}</td>
       <td class="sm">${a['Assigned Contractor']||'—'}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(a['Planned Start Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(a['Casting Date'])}</td>
       <td class="n sm">${a['Concrete Volume']||'—'}</td>
-      <td class="n" style="font-weight:600;color:var(--gd);font-family:var(--mn)">${n(a['Estimated Concrete Cost (AED)'])?fmtAED(a['Estimated Concrete Cost (AED)']):n(a['Estimated Cost (AED)'])?fmtAED(a['Estimated Cost (AED)']):'—'}</td>
+      <td class="n" style="color:var(--gd);font-family:var(--mn);font-size:11px">${n(a['Estimated Concrete Cost (AED)'])?fmtAED(a['Estimated Concrete Cost (AED)']):n(a['Estimated Cost (AED)'])?fmtAED(a['Estimated Cost (AED)']):'-'}</td>
       <td>${badge(a['Status'])}</td>
-    </tr>`).join(''):`<tr><td colspan="10" class="empty">No casting activities</td></tr>`}</tbody></table></div>`;
+    </tr>`)
+  );
+  document.getElementById('c-cast-cards').innerHTML=castAll.length?castAll.map(a=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</span>${badge(a['Status'])}</div>
+      <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Date</div><div class="mcard-item-val">${fd(a['Planned Start Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Volume</div><div class="mcard-item-val">${a['Concrete Volume']||'—'} m³</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Contractor</div><div class="mcard-item-val">${a['Assigned Contractor']||'—'}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Est. Cost</div><div class="mcard-item-val" style="color:var(--gd)">${n(a['Estimated Concrete Cost (AED)'])?fmt(n(a['Estimated Concrete Cost (AED)']))+' AED':'—'}</div></div>
+      </div>
+    </div>`).join(''):'<div class="empty">No castings</div>';
 
   // Stages
-  const stagesData=S.filter(s=>s['Project Name']&&s['Project Name']!=='null');
-  document.getElementById('c-stages').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Project Stages</span><span class="cc">${stagesData.length}</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Stage</th><th>Status</th><th>Completion</th><th>Forecast End</th><th>Gate</th></tr></thead>
-    <tbody>${stagesData.map(s=>`<tr>
+  const sData=S.filter(s=>s['Project Name']&&s['Project Name']!=='null');
+  document.getElementById('c-stage-count').textContent=sData.length;
+  document.getElementById('c-stage-tbl').innerHTML=tbl(
+    ['Project','Stage','Status','Completion','Forecast End'],
+    sData.map(s=>`<tr>
       <td class="sm">${s['Project Name']||'—'}</td>
-      <td style="font-weight:700;font-size:12px">${s['Stage Label']||'—'}</td>
+      <td style="font-weight:700">${s['Stage Label']||'—'}</td>
       <td>${badge(s['Status'])}</td>
       <td>${bar(s['Stage Completion %'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td>
-      <td>${badge(s['Gate Status'])}</td>
-    </tr>`).join('')||'<tr><td colspan="6" class="empty">No stages</td></tr>'}</tbody></table></div>`;
+    </tr>`)
+  );
+  document.getElementById('c-stage-cards').innerHTML=sData.map(s=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${s['Stage Label']||'—'}</span>${badge(s['Status'])}</div>
+      <div class="mcard-sub">${s['Project Name']||'—'}</div>
+      <div class="mcard-bar" style="margin-top:6px">
+        <div class="mcard-bar-top"><span class="mcard-label">Completion</span><span style="font-size:11px;font-family:var(--mn)">${pct(s['Stage Completion %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(s['Stage Completion %'])}%;background:${bc(s['Stage Completion %'])}"></div></div>
+      </div>
+    </div>`).join('');
 
-  // Stage chart
   setTimeout(()=>{
-    const sd=stagesData.filter(s=>n(s['Stage Completion %'])>0).slice(0,10);
-    makeHBar('chart-stages',
-      sd.map(s=>(s['Stage Label']||'').substring(0,18)),
-      sd.map(s=>pct(s['Stage Completion %'])),
-      sd.map(s=>bc(s['Stage Completion %']))
-    );
+    const sd=sData.filter(s=>n(s['Stage Completion %'])>0).slice(0,10);
+    makeHBar('chart-stages',sd.map(s=>(s['Stage Label']||'').substring(0,18)),sd.map(s=>pct(s['Stage Completion %'])),sd.map(s=>bc(s['Stage Completion %'])));
   },100);
 
   // Milestones
-  const msData=M.filter(m=>m['Project Name']&&m['Project Name']!=='null');
-  document.getElementById('c-milestones').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Milestones</span><span class="cc">${msData.length}</span></div>
-    <div class="scroll" style="max-height:260px">
-    <table class="tbl"><thead><tr><th>Project</th><th>Milestone</th><th>Stage</th><th>Status</th><th>Planned End</th><th>Variance</th></tr></thead>
-    <tbody>${msData.map(m=>{const v=n(m['Variance Days']); return `<tr>
+  const mData=M.filter(m=>m['Project Name']&&m['Project Name']!=='null');
+  document.getElementById('c-mile-count').textContent=mData.length;
+  document.getElementById('c-mile-tbl').innerHTML=tbl(
+    ['Project','Milestone','Stage','Status','Planned End','Variance'],
+    mData.map(m=>{const v=n(m['Variance Days']);return`<tr>
       <td class="sm">${m['Project Name']||'—'}</td>
-      <td style="font-weight:700;font-size:12px">${m['Milestone Label']||'—'}</td>
+      <td style="font-weight:700">${m['Milestone Label']||'—'}</td>
       <td class="sm">${m['Stage Label']||'—'}</td>
       <td>${badge(m['Status'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'#64748b'}">${v>0?'+'+v:v||'—'} days</td>
-    </tr>`}).join('')||'<tr><td colspan="6" class="empty">No milestones</td></tr>'}</tbody></table></div>`;
+      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v:v||'—'} days</td>
+    </tr>`})
+  );
+  document.getElementById('c-mile-cards').innerHTML=mData.map(m=>{const v=n(m['Variance Days']);return`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${m['Milestone Label']||'—'}</span>${badge(m['Status'])}</div>
+      <div class="mcard-sub">${m['Project Name']||'—'} · ${m['Stage Label']||'—'}</div>
+      <div class="mcard-row" style="margin-top:6px">
+        <span class="mcard-label">Planned End: ${fd(m['Planned End Date'])}</span>
+        <span style="font-size:11px;font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v+'d':v<0?v+'d':'On time'}</span>
+      </div>
+    </div>`}).join('');
 
-  // All activities
+  // Activities
   const allA=A.filter(a=>a['Is Casting Activity']!=='Yes');
-  document.getElementById('c-activities').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Construction Activities</span><span class="cc">${allA.length} activities</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Activity</th><th>Stage</th><th>Milestone</th><th>Trade</th><th>Contractor</th><th>Start</th><th>End</th><th>Progress</th><th>Status</th><th style="text-align:right">Est. Cost</th></tr></thead>
-    <tbody>${allA.length?allA.map(a=>`<tr>
+  document.getElementById('c-act-count').textContent=allA.length;
+  document.getElementById('c-act-tbl').innerHTML=tbl(
+    ['Project','Activity','Stage','Contractor','Start','End','Progress','Status'],
+    allA.map(a=>`<tr>
       <td class="sm">${a['Project Name']||'—'}</td>
-      <td style="font-weight:600;font-size:12px">${a['Activity Name']||'—'}</td>
+      <td style="font-weight:600">${a['Activity Name']||'—'}</td>
       <td class="sm">${a['Stage Label']||'—'}</td>
-      <td class="sm">${a['Milestone Label']||'—'}</td>
-      <td class="sm">${a['Trade / Discipline']||'—'}</td>
       <td class="sm">${a['Assigned Contractor']||'—'}</td>
       <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned End Date'])}</td>
       <td>${bar(a['Progress %'],55)}</td>
       <td>${badge(a['Status'])}</td>
-      <td class="n sm" style="color:var(--gd)">${n(a['Estimated Cost (AED)'])?fmt(n(a['Estimated Cost (AED)']))+' AED':'—'}</td>
-    </tr>`).join(''):`<tr><td colspan="11" class="empty">No activities</td></tr>`}</tbody></table></div>`;
+    </tr>`)
+  );
+  document.getElementById('c-act-cards').innerHTML=allA.map(a=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div>
+      <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Start</div><div class="mcard-item-val">${fds(a['Planned Start Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Contractor</div><div class="mcard-item-val">${a['Assigned Contractor']||'—'}</div></div>
+      </div>
+      <div class="mcard-bar" style="margin-top:6px">
+        <div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-size:11px;font-family:var(--mn)">${pct(a['Progress %']).toFixed(0)}%</span></div>
+        <div class="pw"><div class="pb" style="width:${pct(a['Progress %'])}%;background:${bc(a['Progress %'])}"></div></div>
+      </div>
+    </div>`).join('');
 }
 
-// ── PAGE 4: PROCUREMENT ──────────────────────
-function buildProcurement() {
+// ═══════════════════════════════════════════
+// PAGE 4 — PROCUREMENT
+// ═══════════════════════════════════════════
+function buildProcurement(){
   const O=D['Orders']||[];
   const ll=O.filter(o=>o['Long Lead Item']==='Yes');
   const notOrd=O.filter(o=>(o['Procurement Status']||'').toLowerCase()==='not ordered'||(o['Procurement Status']||'')==='');
   const lpoOrd=O.filter(o=>(o['Procurement Status']||'').toLowerCase().includes('lpo'));
   const deliv=O.filter(o=>o['Fully Delivered']==='Yes'||(o['Procurement Status']||'').toLowerCase().includes('deliver'));
   const totalAll=O.reduce((s,o)=>s+n(o['LPO Value']),0);
-  const totalLPO=lpoOrd.reduce((s,o)=>s+n(o['LPO Value']),0);
 
-  document.getElementById('pr-kpis').innerHTML=`
-    <div class="kpi cb"><div class="kl">Total Order Value</div><div class="kv">${fmt(totalAll)}</div><div class="ks">AED committed</div></div>
-    <div class="kpi cb"><div class="kl">LPO Issued</div><div class="kv">${lpoOrd.length}</div><div class="ks">${fmt(totalLPO)} AED</div></div>
-    <div class="kpi cg"><div class="kl">Delivered</div><div class="kv">${deliv.length}</div><div class="ks">complete</div></div>
-    <div class="kpi co"><div class="kl">Pending Delivery</div><div class="kv">${O.length-deliv.length}</div><div class="ks">in process</div></div>
-    <div class="kpi cr"><div class="kl">Not Ordered</div><div class="kv">${notOrd.length}</div><div class="ks">action needed</div></div>
-    <div class="kpi cr"><div class="kl">Long Lead Critical</div><div class="kv">${ll.filter(o=>(o['Procurement Status']||'').toLowerCase()==='not ordered').length}</div><div class="ks">not ordered</div></div>
-  `;
+  document.getElementById('pr-kpis').innerHTML=[
+    ['cb','Total Order Value',fmt(totalAll),'AED committed'],
+    ['cb','LPO Issued',lpoOrd.length,fmt(lpoOrd.reduce((s,o)=>s+n(o['LPO Value']),0))+' AED'],
+    ['cg','Delivered',deliv.length,'complete'],
+    ['co','Pending Delivery',O.length-deliv.length,'in process'],
+    ['cr','Not Ordered',notOrd.length,'action needed'],
+    ['cr','LL Critical',ll.filter(o=>(o['Procurement Status']||'').toLowerCase()==='not ordered').length,'not ordered'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
 
-  // Order status chart
   setTimeout(()=>{
-    const statuses={};
-    O.forEach(o=>{const s=o['Procurement Status']||'Unknown';statuses[s]=(statuses[s]||0)+1;});
-    const cols=['rgba(47,127,255,.8)','rgba(0,212,138,.8)','rgba(255,122,42,.8)','rgba(255,51,82,.8)','rgba(157,127,234,.8)','rgba(74,101,133,.5)'];
+    const statuses={};O.forEach(o=>{const s=o['Procurement Status']||'Unknown';statuses[s]=(statuses[s]||0)+1;});
+    const cols=['#2563eb','#16a34a','#ea580c','#dc2626','#7c3aed','#94a3b8'];
     makeDonut('chart-orders',Object.keys(statuses),Object.values(statuses),cols.slice(0,Object.keys(statuses).length));
   },100);
 
-  // Long lead
-  document.getElementById('pr-ll').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>Long Lead Orders</span><span class="cc">${ll.length} items</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Item</th><th>Lead Time</th><th>Must Order By</th><th>Required On Site</th><th>Status</th><th class="n">LPO Value</th></tr></thead>
-    <tbody>${ll.length?ll.sort((a,b)=>new Date(a['Order By Date'])-new Date(b['Order By Date'])).map(o=>{
+  document.getElementById('pr-ll-count').textContent=ll.length+' items';
+  document.getElementById('pr-ll-tbl').innerHTML=tbl(
+    ['Project','Item','Lead Time','Order By','On Site','Status','LPO Value'],
+    ll.sort((a,b)=>parseDate(a['Order By Date'])-parseDate(b['Order By Date'])).map(o=>{
       const notO=(o['Procurement Status']||'').toLowerCase()==='not ordered';
-      return `<tr style="${notO?'background:rgba(255,51,82,.04)':''}">
+      return`<tr style="${notO?'background:#fff7ed':''}">
         <td class="sm">${o['Project Name']||'—'}</td>
-        <td style="font-weight:700;font-size:12px">${o['Order Description']||'—'}${notO?'<span class="tag-ll">ACTION</span>':''}</td>
+        <td style="font-weight:700">${o['Order Description']||'—'}${notO?'<span class="tag-ll">ACTION</span>':''}</td>
         <td class="sm">${o['Lead Time']||'—'} wks</td>
         <td style="font-family:var(--mn);font-size:10px;color:var(--red)">${fd(o['Order By Date'])}</td>
         <td style="font-family:var(--mn);font-size:10px">${fd(o['Required On Site Date'])}</td>
         <td>${badge(o['Procurement Status'])}</td>
         <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
-      </tr>`;
-    }).join(''):`<tr><td colspan="7" class="empty">No long lead orders</td></tr>`}</tbody></table></div>`;
+      </tr>`;})
+  );
+  document.getElementById('pr-ll-cards').innerHTML=ll.length?ll.map(o=>{
+    const notO=(o['Procurement Status']||'').toLowerCase()==='not ordered';
+    return`<div class="mcard" style="${notO?'border-left:3px solid var(--red);':''}">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span>${badge(o['Procurement Status'])}</div>
+      <div class="mcard-sub">${o['Project Name']||'—'} · ${o['Lead Time']||'—'} weeks lead time</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val" style="color:var(--red)">${fd(o['Order By Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">LPO Value</div><div class="mcard-item-val" style="color:var(--gd)">${fmtAED(o['LPO Value'])}</div></div>
+      </div>
+    </div>`}).join(''):'<div class="empty">No long lead orders</div>';
 
-  // All orders
-  document.getElementById('pr-all').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Orders</span><span class="cc">${O.length} orders · ${fmtAED(totalAll)}</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Description</th><th>Category</th><th>Order Date</th><th>Expected Delivery</th><th>Actual Delivery</th><th>Delivered?</th><th>Status</th><th class="n">LPO Value</th></tr></thead>
-    <tbody>${O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`<tr>
+  document.getElementById('pr-all-count').textContent=O.length+' · '+fmtAED(totalAll);
+  document.getElementById('pr-all-tbl').innerHTML=tbl(
+    ['Project','Description','Category','Order By','Expected Delivery','Delivered?','Status','LPO'],
+    O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`<tr>
       <td class="sm">${o['Project Name']||'—'}</td>
-      <td style="font-weight:600;font-size:12px">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td>
+      <td style="font-weight:600">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td>
       <td class="sm">${o['Category']||'—'}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(o['Order Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(o['Order By Date'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(o['Expected Delivery Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(o['Final Delivery Date'])}</td>
-      <td>${badge(o['Fully Delivered']==='Yes'?'Yes':o['Fully Delivered']||'Pending')}</td>
+      <td>${badge(o['Fully Delivered']==='Yes'?'Yes':'Pending')}</td>
       <td>${badge(o['Procurement Status'])}</td>
       <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
-    </tr>`).join('')||'<tr><td colspan="9" class="empty">No orders</td></tr>'}</tbody></table></div>`;
+    </tr>`)
+  );
+  document.getElementById('pr-all-cards').innerHTML=O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</span>${badge(o['Procurement Status'])}</div>
+      <div class="mcard-sub">${o['Project Name']||'—'}${o['Category']?' · '+o['Category']:''}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val">${fd(o['Order By Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">LPO Value</div><div class="mcard-item-val" style="color:var(--gd)">${fmtAED(o['LPO Value'])}</div></div>
+      </div>
+    </div>`).join('');
 }
 
-// ── PAGE 5: NOC ──────────────────────────────
-function buildNOC() {
+// ═══════════════════════════════════════════
+// PAGE 5 — NOC
+// ═══════════════════════════════════════════
+function buildNOC(){
   const N=D['NOC Tracker']||[];
   const appr=N.filter(n=>(n['Current Status']||'').toLowerCase()==='approved').length;
-  const pend=N.filter(n=>{const s=(n['Current Status']||'').toLowerCase();return s.includes('pending')||s.includes('progress');}).length;
-  const exp30=N.filter(n=>{if(!n['Expiry Date']) return false; const d=new Date(n['Expiry Date']),now=new Date(),e=new Date();e.setDate(e.getDate()+30);return d>=now&&d<=e;});
+  const pend=N.filter(n=>{const s=(n['Current Status']||'').toLowerCase();return s.includes('pending')||s.includes('progress')||s.includes('review');}).length;
+  const exp30=N.filter(n=>{if(!n['Expiry Date'])return false;const d=parseDate(n['Expiry Date']),now=new Date(),e=new Date();e.setDate(e.getDate()+30);return d>=now&&d<=e;});
 
-  document.getElementById('n-kpis').innerHTML=`
-    <div class="kpi cg"><div class="kl">Approved NOCs</div><div class="kv">${appr}</div><div class="ks">active</div></div>
-    <div class="kpi co"><div class="kl">Pending / In Progress</div><div class="kv">${pend}</div><div class="ks">awaiting</div></div>
-    <div class="kpi cr"><div class="kl">Expiring (30 days)</div><div class="kv">${exp30.length}</div><div class="ks">renew urgently</div></div>
-    <div class="kpi cb"><div class="kl">Total NOCs</div><div class="kv">${N.length}</div><div class="ks">tracked</div></div>
-  `;
+  document.getElementById('n-kpis').innerHTML=[
+    ['cg','Approved NOCs',appr,'active'],
+    ['co','Pending / In Progress',pend,'awaiting'],
+    ['cr','Expiring (30 days)',exp30.length,'renew urgently'],
+    ['cb','Total NOCs',N.length,'tracked'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
 
   setTimeout(()=>{
-    const statuses={};
-    N.forEach(n=>{const s=n['Current Status']||'Unknown';statuses[s]=(statuses[s]||0)+1;});
-    const cols=['rgba(0,212,138,.8)','rgba(255,122,42,.8)','rgba(47,127,255,.8)','rgba(255,51,82,.8)','rgba(74,101,133,.5)'];
-    makeDonut('chart-noc',Object.keys(statuses),Object.values(statuses),cols.slice(0,Object.keys(statuses).length));
+    const s={};N.forEach(n=>{const v=n['Current Status']||'Unknown';s[v]=(s[v]||0)+1;});
+    makeDonut('chart-noc',Object.keys(s),Object.values(s),['#16a34a','#ea580c','#2563eb','#dc2626','#94a3b8'].slice(0,Object.keys(s).length));
   },100);
 
-  document.getElementById('n-noc').innerHTML=`
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOC Tracker</span><span class="cc">${N.length} NOCs</span></div>
-    <div class="scroll">
-    <table class="tbl"><thead><tr><th>Project</th><th>Authority</th><th>NOC Type</th><th>Status</th><th>Submitted</th><th>Expected Approval</th><th>Expiry</th><th>Days to Expiry</th><th>Assigned</th></tr></thead>
-    <tbody>${N.filter(n=>n['Project Name']&&n['Project Name']!=='null').map(n=>{
-      const days=parseInt(n['Days to Expiry']);
-      const dc=isNaN(days)?'#64748b':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';
-      return `<tr>
-        <td class="sm">${n['Project Name']||'—'}</td>
-        <td class="sm">${n['Authority Name']||'—'}</td>
-        <td style="font-weight:700;font-size:12px">${n['NOC Type']||'—'}</td>
-        <td>${badge(n['Current Status'])}</td>
-        <td style="font-family:var(--mn);font-size:10px">${fd(n['Submission Date'])}</td>
-        <td style="font-family:var(--mn);font-size:10px">${fd(n['Expected Approval Date'])}</td>
-        <td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td>
-        <td style="font-family:var(--mn);font-size:11px;color:${dc}">${isNaN(days)?'—':days+' days'}</td>
-        <td class="sm">${n['Assigned To']||'—'}</td>
-      </tr>`;
-    }).join('')||'<tr><td colspan="9" class="empty">No NOC records</td></tr>'}</tbody></table></div>`;
+  document.getElementById('n-noc-count').textContent=N.length+' NOCs';
+  const nData=N.filter(n=>n['Project Name']&&n['Project Name']!=='null');
+  document.getElementById('n-noc-tbl').innerHTML=tbl(
+    ['Project','Authority','NOC Type','Status','Submitted','Expected','Expiry','Days Left','Assigned'],
+    nData.map(n=>{const days=parseInt(n['Days to Expiry']);const dc=isNaN(days)?'var(--dim)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';return`<tr>
+      <td class="sm">${n['Project Name']||'—'}</td>
+      <td class="sm">${n['Authority Name']||'—'}</td>
+      <td style="font-weight:700">${n['NOC Type']||'—'}</td>
+      <td>${badge(n['Current Status'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Submission Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Expected Approval Date'])}</td>
+      <td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${dc}">${isNaN(days)?'—':days+' days'}</td>
+      <td class="sm">${n['Assigned To']||'—'}</td>
+    </tr>`})
+  );
+  document.getElementById('n-noc-cards').innerHTML=nData.map(n=>{const days=parseInt(n['Days to Expiry']);const dc=isNaN(days)?'var(--dim)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';return`
+    <div class="mcard">
+      <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${n['NOC Type']||'—'}</span>${badge(n['Current Status'])}</div>
+      <div class="mcard-sub">${n['Project Name']||'—'} · ${n['Authority Name']||'—'}</div>
+      <div class="mcard-grid">
+        <div class="mcard-item"><div class="mcard-item-lbl">Submitted</div><div class="mcard-item-val">${fd(n['Submission Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Expiry</div><div class="mcard-item-val" style="color:${dc}">${fd(n['Expiry Date'])}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Days Left</div><div class="mcard-item-val" style="color:${dc}">${isNaN(days)?'—':days+' days'}</div></div>
+        <div class="mcard-item"><div class="mcard-item-lbl">Assigned</div><div class="mcard-item-val">${n['Assigned To']||'—'}</div></div>
+      </div>
+    </div>`}).join('');
 }
 
-// ── PAGE 6: PROJECT DETAIL ──────────────────
-function gotoProject(name) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('p-project').classList.add('active');
-  const tabs = document.querySelectorAll('.tab');
-  tabs[tabs.length-1].classList.add('active');
-  document.getElementById('proj-select').value = name;
-  buildProject();
-  window.scrollTo({top:0,behavior:'smooth'});
+// ═══════════════════════════════════════════
+// PAGE 6 — PROJECT DETAIL
+// ═══════════════════════════════════════════
+function populateProjectSelect(){
+  const P=D['Projects']||[];
+  const sel=document.getElementById('proj-select');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">— Choose a project —</option>';
+  P.filter(p=>p['Project Name']&&!['null','test','test '].includes(String(p['Project Name']).trim().toLowerCase()))
+   .sort((a,b)=>String(a['Project Name']).localeCompare(String(b['Project Name'])))
+   .forEach(p=>{const o=document.createElement('option');o.value=p['Project Name'];o.textContent=p['Project Name']+(p['Project Status']?' — '+p['Project Status']:'');sel.appendChild(o);});
+  if(cur) sel.value=cur;
 }
 
-function populateProjectSelect() {
-  const P = D['Projects'] || [];
-  const sel = document.getElementById('proj-select');
-  const current = sel.value;
-  sel.innerHTML = '<option value="">— Choose a project —</option>';
-  const real = P.filter(p => p['Project Name'] && !['null','test','test '].includes(String(p['Project Name']).trim().toLowerCase()));
-  real.sort((a,b) => String(a['Project Name']).localeCompare(String(b['Project Name'])));
-  real.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p['Project Name'];
-    opt.textContent = p['Project Name'] + (p['Project Status'] ? ' — ' + p['Project Status'] : '');
-    sel.appendChild(opt);
-  });
-  if(current) sel.value = current;
-}
-
-function buildProject() {
-  const name = document.getElementById('proj-select').value;
-  document.getElementById('proj-header').style.display = name ? 'block' : 'none';
-  document.getElementById('proj-empty').style.display = name ? 'none' : 'block';
+function buildProject(){
+  const name=document.getElementById('proj-select').value;
+  document.getElementById('proj-header').style.display=name?'block':'none';
+  document.getElementById('proj-empty').style.display=name?'none':'block';
   if(!name) return;
 
-  const P = D['Projects'] || [];
-  const S = D['Stages'] || [];
-  const M = D['Milestones'] || [];
-  const A = D['Activities'] || [];
-  const O = D['Orders'] || [];
-  const N = D['NOC Tracker'] || [];
-  const IPC = D['IPC Log'] || [];
-  const BS = D['Budget Summary'] || [];
+  const P=D['Projects']||[],S=D['Stages']||[],M=D['Milestones']||[],A=D['Activities']||[];
+  const O=D['Orders']||[],N=D['NOC Tracker']||[],IPC=D['IPC Log']||[],BS=D['Budget Summary']||[];
 
-  const proj = P.find(p => p['Project Name'] === name) || {};
-  const stages = S.filter(s => s['Project Name'] === name);
-  const miles = M.filter(m => m['Project Name'] === name);
-  const acts = A.filter(a => a['Project Name'] === name);
-  const orders = O.filter(o => o['Project Name'] === name);
-  const nocs = N.filter(n => n['Project Name'] === name);
-  const ipcs = IPC.filter(r => r['Project Name'] === name);
-  const budget = BS.find(b => b['Project Name'] === name) || {};
+  const proj=P.find(p=>p['Project Name']===name)||{};
+  const stages=S.filter(s=>s['Project Name']===name);
+  const miles=M.filter(m=>m['Project Name']===name);
+  const acts=A.filter(a=>a['Project Name']===name);
+  const orders=O.filter(o=>o['Project Name']===name);
+  const nocs=N.filter(n=>n['Project Name']===name);
+  const ipcs=IPC.filter(r=>r['Project Name']===name);
+  const budget=BS.find(b=>b['Project Name']===name)||{};
+  const castings=acts.filter(a=>a['Is Casting Activity']==='Yes');
+  const nonCast=acts.filter(a=>a['Is Casting Activity']!=='Yes');
 
-  const castings = acts.filter(a => a['Is Casting Activity'] === 'Yes');
-  const nonCast = acts.filter(a => a['Is Casting Activity'] !== 'Yes');
-  const h = proj['Health Status'] || proj['Auto Health Flag'] || '';
+  document.getElementById('proj-health').innerHTML=hbadge(proj['Health Status'],proj['Auto Health Flag']);
 
-  // Health badge in header
-  document.getElementById('proj-health').innerHTML = hbadge(proj['Health Status'], proj['Auto Health Flag']);
-
-  // Project Info
-  document.getElementById('proj-info').innerHTML = `
-    <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+  // Info banner
+  document.getElementById('proj-info').innerHTML=`
+    <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:20px">
       <div style="flex:1;min-width:200px">
-        <div style="font-size:20px;font-weight:800;color:#0f2042;letter-spacing:-.5px">${name}</div>
-        <div style="font-size:12px;color:#64748b;margin-top:4px">${proj['Building Description'] || ''} · ${proj['Zone / Area'] || ''} · ${proj['Emirate'] || '—'}</div>
-        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-          ${badge(proj['Project Status'])} ${hbadge(proj['Health Status'],proj['Auto Health Flag'])} ${badge(proj['Project Type'])}
-        </div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark);letter-spacing:-.5px">${name}</div>
+        <div style="font-size:12px;color:var(--dim);margin-top:3px">${proj['Building Description']||''} · ${proj['Zone / Area']||''} · ${proj['Emirate']||'—'}</div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${badge(proj['Project Status'])} ${hbadge(proj['Health Status'],proj['Auto Health Flag'])}</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:2;min-width:280px">
-        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Developer</div><div style="font-size:12px;color:#1e3a5f;margin-top:3px">${proj['Developer'] || '—'}</div></div>
-        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Main Contractor</div><div style="font-size:12px;color:#1e3a5f;margin-top:3px">${proj['Main Contractor'] || '—'}</div></div>
-        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Project Manager</div><div style="font-size:12px;color:#1e3a5f;margin-top:3px">${proj['Project Manager'] || '—'}</div></div>
-        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Planned Start</div><div style="font-size:11px;font-family:var(--mn);color:#1e3a5f;margin-top:3px">${fd(proj['Planned Start Date'])}</div></div>
-        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Planned Completion</div><div style="font-size:11px;font-family:var(--mn);color:#1e3a5f;margin-top:3px">${fd(proj['Planned Completion Date'])}</div></div>
-        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Total Delay</div><div style="font-size:11px;font-family:var(--mn);color:${n(proj['Total Delay'])>0?'var(--red)':'var(--gn)'};margin-top:3px">${n(proj['Total Delay'])>0?'+'+n(proj['Total Delay'])+' days':'On schedule'}</div></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:2;min-width:260px">
+        ${[['Developer',proj['Developer']],['Main Contractor',proj['Main Contractor']],['Project Manager',proj['Project Manager']],['Planned Start',fd(proj['Planned Start Date'])],['Planned Completion',fd(proj['Planned Completion Date'])],['Total Delay',n(proj['Total Delay'])>0?'+'+n(proj['Total Delay'])+' days':'On schedule']].map(([l,v])=>`
+        <div><div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px">${l}</div><div style="font-size:12px;color:var(--text);margin-top:2px">${v||'—'}</div></div>`).join('')}
       </div>
     </div>`;
 
   // KPIs
-  const totalPaid = ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()==='paid').reduce((s,r)=>s+n(r['Net Due']),0);
-  const outstanding = ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').reduce((s,r)=>s+n(r['Net Due']),0);
-  const castCost = castings.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
-  const compStages = stages.filter(s=>(s['Status']||'').toLowerCase().includes('complet')).length;
-  const delayedM = miles.filter(m=>n(m['Variance Days'])>0).length;
-
-  document.getElementById('proj-kpis').innerHTML = `
-    <div class="kpi cb"><div class="kl">Contract Value</div><div class="kv" style="font-size:18px">${fmt(budget['Revised Contract Value'])}</div><div class="ks">AED revised</div></div>
-    <div class="kpi cg"><div class="kl">Total Paid</div><div class="kv" style="font-size:18px">${fmt(totalPaid)}</div><div class="ks">AED to date</div></div>
-    <div class="kpi cr"><div class="kl">Outstanding</div><div class="kv" style="font-size:18px">${fmt(outstanding)}</div><div class="ks">AED unpaid</div></div>
-    <div class="kpi cg"><div class="kl">Stages Done</div><div class="kv" style="font-size:18px">${compStages}/${stages.length}</div><div class="ks">stages complete</div></div>
-    <div class="kpi cr"><div class="kl">Delayed Milestones</div><div class="kv" style="font-size:18px">${delayedM}</div><div class="ks">behind schedule</div></div>
-    <div class="kpi co"><div class="kl">Castings Total</div><div class="kv" style="font-size:18px">${castings.length}</div><div class="ks">${fmt(castCost)} AED est.</div></div>
-    <div class="kpi cb"><div class="kl">Active NOCs</div><div class="kv" style="font-size:18px">${nocs.filter(n=>(n['Current Status']||'').toLowerCase()==='approved').length}</div><div class="ks">approved</div></div>
-    <div class="kpi co"><div class="kl">Total Orders</div><div class="kv" style="font-size:18px">${orders.length}</div><div class="ks">${fmt(orders.reduce((s,o)=>s+n(o['LPO Value']),0))} AED</div></div>
-  `;
+  const totalPaid=ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()==='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const outstanding=ipcs.filter(r=>(r['Payment Status']||'').toLowerCase()!=='paid').reduce((s,r)=>s+n(r['Net Due']),0);
+  const castCost=castings.reduce((s,a)=>s+n(a['Estimated Concrete Cost (AED)']),0);
+  document.getElementById('proj-kpis').innerHTML=[
+    ['cb','Contract',fmt(budget['Revised Contract Value']),'AED'],
+    ['cg','Paid',fmt(totalPaid),'AED'],
+    ['cr','Outstanding',fmt(outstanding),'AED'],
+    ['cg','Stages Done',stages.filter(s=>(s['Status']||'').toLowerCase().includes('complet')).length+'/'+stages.length,'stages'],
+    ['cr','Delayed Milestones',miles.filter(m=>n(m['Variance Days'])>0).length,'milestones'],
+    ['co','Castings',castings.length,fmt(castCost)+' AED est.'],
+    ['cb','NOCs',nocs.length,nocs.filter(n=>(n['Current Status']||'').toLowerCase()==='approved').length+' approved'],
+    ['co','Orders',orders.length,fmt(orders.reduce((s,o)=>s+n(o['LPO Value']),0))+' AED'],
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.04}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
 
   // Budget
-  document.getElementById('proj-budget').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget Summary</span></div>
-    <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${[['Original Contract',budget['Original Contract Value'],'#1e3a5f'],['Approved Variations',budget['Approved Variations'],'var(--og)'],['Revised Contract',budget['Revised Contract Value'],'var(--bl)'],['Total Certified',budget['Total IPC Certified'],'var(--tl)'],['Total Paid',budget['Total IPC Paid'],'var(--gn)'],['Balance Remaining',budget['Balance Remaining'],'var(--og)'],['Orders Committed',budget['Total Orders Committed'],'var(--pu)'],].map(([lbl,val,col])=>`
-        <div style="background:rgba(255,255,255,.03);border:1px solid #e0e8f4;border-radius:6px;padding:10px 12px">
-          <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">${lbl}</div>
-          <div style="font-size:15px;font-weight:700;font-family:var(--mn);color:${col};margin-top:4px">${fmtAED(val)}</div>
-        </div>`).join('')}
-      <div style="background:rgba(255,255,255,.03);border:1px solid #e0e8f4;border-radius:6px;padding:10px 12px">
-        <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Financial Progress</div>
-        <div style="margin-top:8px">${bar(budget['Financial Progress %'],120)}</div>
-      </div>
-    </div>`;
+  document.getElementById('proj-budget').innerHTML=`
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget</span></div>
+    <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    ${[['Original Contract',budget['Original Contract Value'],'var(--text)'],['Approved Variations',budget['Approved Variations'],'var(--og)'],['Revised Contract',budget['Revised Contract Value'],'var(--bl)'],['Total Certified',budget['Total IPC Certified'],'var(--tl)'],['Total Paid',budget['Total IPC Paid'],'var(--gn)'],['Balance Remaining',budget['Balance Remaining'],'var(--og)'],].map(([l,v,c])=>`
+      <div style="background:#f8fafd;border:1px solid var(--border);border-radius:6px;padding:9px 11px">
+        <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px">${l}</div>
+        <div style="font-size:14px;font-weight:700;font-family:var(--mn);color:${c};margin-top:3px">${fmtAED(v)}</div>
+      </div>`).join('')}
+    <div style="grid-column:1/-1;background:#f8fafd;border:1px solid var(--border);border-radius:6px;padding:9px 11px">
+      <div style="font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px">Financial Progress</div>
+      ${bar(budget['Financial Progress %'],200)}
+    </div></div>`;
 
   // Castings
-  document.getElementById('proj-castings').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Slab Castings</span><span class="cc">${castings.length} total</span></div>
-    <div class="scroll" style="max-height:280px">
-    ${castings.length ? castings.sort((a,b)=>new Date(a['Planned Start Date'])-new Date(b['Planned Start Date'])).map(a=>`
-      <div class="ci">
-        <div><div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</div><div class="ci-m">${a['Stage Label']||'—'} · ${a['Milestone Label']||'—'}</div><div class="ci-m">${a['Assigned Contractor']||'—'}</div></div>
-        <div style="text-align:right"><div class="ci-d">${fd(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${n(a['Estimated Concrete Cost (AED)'])?`<div class="ci-c">${fmtAED(a['Estimated Concrete Cost (AED)'])}</div>`:''}${badge(a['Status'])}</div>
-      </div>`).join('') : '<div class="empty">No casting activities</div>'}
-    </div>`;
+  document.getElementById('proj-castings').innerHTML=`
+    <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Castings</span><span class="cc">${castings.length}</span></div>
+    ${castings.length?castings.sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date'])).map(a=>`
+    <div class="ci">
+      <div><div class="ci-n">${a['Cast Element']||a['Activity Name']||'Slab'}</div><div class="ci-m">${a['Stage Label']||'—'} · ${a['Assigned Contractor']||'—'}</div></div>
+      <div style="text-align:right"><div class="ci-d">${fd(a['Planned Start Date'])}</div>${a['Concrete Volume']?`<div class="ci-v">${a['Concrete Volume']} m³</div>`:''}${n(a['Estimated Concrete Cost (AED)'])?`<div class="ci-c">${fmt(n(a['Estimated Concrete Cost (AED)']))} AED</div>`:''}${badge(a['Status'])}</div>
+    </div>`).join(''):'<div class="empty">No castings</div>'}`;
 
-  // Stages
-  document.getElementById('proj-stages').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--gn)"></span>Stages</span><span class="cc">${stages.length} stages</span></div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>Stage</th><th>Status</th><th>Completion</th><th>Planned Start</th><th>Planned End</th><th>Forecast End</th><th>Variance</th><th>Gate</th></tr></thead>
-    <tbody>${stages.map(s=>`<tr>
-      <td style="font-weight:700">${s['Stage Label']||'—'}</td>
-      <td>${badge(s['Status'])}</td>
-      <td>${bar(s['Stage Completion %'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(s['Planned Start Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(s['Planned End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px;color:${n(s['Variance Days'])>0?'var(--red)':'#64748b'}">${n(s['Variance Days'])>0?'+'+n(s['Variance Days'])+'d':'—'}</td>
-      <td>${badge(s['Gate Status'])}</td>
-    </tr>`).join('')||'<tr><td colspan="8" class="empty">No stages — run Clone From Template</td></tr>'}</tbody></table></div>`;
+  // Stages, milestones, activities, orders, NOCs, IPC
+  const simpleCard=(id,title,color,headers,rows,mobileRows)=>{
+    document.getElementById(id).innerHTML=`
+      <div class="ch"><span class="ct"><span class="dc" style="background:${color}"></span>${title}</span><span class="cc">${rows.length}</span></div>
+      <div class="scroll"><div class="tbl-wrap"><table class="tbl">${tbl(headers,rows)}</table></div></div>
+      <div class="mlist">${mobileRows||''}</div>`;
+  };
 
-  // Milestones
-  document.getElementById('proj-milestones').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>Milestones</span><span class="cc">${miles.length} milestones</span></div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>Milestone</th><th>Stage</th><th>Status</th><th>Planned End</th><th>Actual End</th><th>Variance</th></tr></thead>
-    <tbody>${miles.map(m=>{const v=n(m['Variance Days']); return `<tr>
-      <td style="font-weight:700">${m['Milestone Label']||'—'}</td>
-      <td class="sm">${m['Stage Label']||'—'}</td>
-      <td>${badge(m['Status'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(m['Actual End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'#64748b'}">${v>0?'+'+v:v||'—'} days</td>
-    </tr>`}).join('')||'<tr><td colspan="6" class="empty">No milestones</td></tr>'}</tbody></table></div>`;
+  simpleCard('proj-stages','Stages','var(--gn)',
+    ['Stage','Status','Completion','Forecast End','Gate'],
+    stages.map(s=>`<tr><td style="font-weight:700">${s['Stage Label']||'—'}</td><td>${badge(s['Status'])}</td><td>${bar(s['Stage Completion %'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td><td>${badge(s['Gate Status'])}</td></tr>`),
+    stages.map(s=>`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${s['Stage Label']||'—'}</span>${badge(s['Status'])}</div><div class="mcard-bar" style="margin-top:6px"><div class="mcard-bar-top"><span class="mcard-label">Completion</span><span style="font-size:11px;font-family:var(--mn)">${pct(s['Stage Completion %']).toFixed(0)}%</span></div><div class="pw"><div class="pb" style="width:${pct(s['Stage Completion %'])}%;background:${bc(s['Stage Completion %'])}"></div></div></div></div>`).join('')
+  );
 
-  // Activities
-  document.getElementById('proj-activities').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>All Activities</span><span class="cc">${nonCast.length} activities</span></div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>Activity</th><th>Stage</th><th>Milestone</th><th>Trade</th><th>Contractor</th><th>Start</th><th>End</th><th>Progress</th><th>Status</th><th style="text-align:right">Est. Cost</th></tr></thead>
-    <tbody>${nonCast.map(a=>`<tr>
-      <td style="font-weight:600">${a['Activity Name']||'—'}</td>
-      <td class="sm">${a['Stage Label']||'—'}</td>
-      <td class="sm">${a['Milestone Label']||'—'}</td>
-      <td class="sm">${a['Trade / Discipline']||'—'}</td>
-      <td class="sm">${a['Assigned Contractor']||'—'}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fds(a['Planned End Date'])}</td>
-      <td>${bar(a['Progress %'],55)}</td>
-      <td>${badge(a['Status'])}</td>
-      <td class="n sm" style="color:var(--gd)">${n(a['Estimated Cost (AED)'])?fmt(n(a['Estimated Cost (AED)']))+' AED':'—'}</td>
-    </tr>`).join('')||'<tr><td colspan="10" class="empty">No activities</td></tr>'}</tbody></table></div>`;
+  simpleCard('proj-milestones','Milestones','var(--tl)',
+    ['Milestone','Stage','Status','Planned End','Variance'],
+    miles.map(m=>{const v=n(m['Variance Days']);return`<tr><td style="font-weight:700">${m['Milestone Label']||'—'}</td><td class="sm">${m['Stage Label']||'—'}</td><td>${badge(m['Status'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td><td style="font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v:v||'—'} days</td></tr>`}),
+    miles.map(m=>{const v=n(m['Variance Days']);return`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${m['Milestone Label']||'—'}</span>${badge(m['Status'])}</div><div class="mcard-sub">${m['Stage Label']||'—'} · Due ${fd(m['Planned End Date'])}</div><div class="mcard-row" style="margin-top:4px"><span class="mcard-label">Variance</span><span style="font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v+'d':v<0?v+'d':'On time'}</span></div></div>`}).join('')
+  );
 
-  // Orders
-  document.getElementById('proj-orders').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--pu)"></span>Orders</span><span class="cc">${orders.length} orders · ${fmtAED(orders.reduce((s,o)=>s+n(o['LPO Value']),0))}</span></div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>Description</th><th>Status</th><th>Order By</th><th>Delivery</th><th style="text-align:right">LPO</th></tr></thead>
-    <tbody>${orders.map(o=>`<tr>
-      <td style="font-weight:600;font-size:12px">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td>
-      <td>${badge(o['Procurement Status'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(o['Order By Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(o['Expected Delivery Date'])}</td>
-      <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
-    </tr>`).join('')||'<tr><td colspan="5" class="empty">No orders</td></tr>'}</tbody></table></div>`;
+  simpleCard('proj-activities','Activities','var(--pu)',
+    ['Activity','Stage','Contractor','Start','End','Progress','Status'],
+    nonCast.map(a=>`<tr><td style="font-weight:600">${a['Activity Name']||'—'}</td><td class="sm">${a['Stage Label']||'—'}</td><td class="sm">${a['Assigned Contractor']||'—'}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned End Date'])}</td><td>${bar(a['Progress %'],55)}</td><td>${badge(a['Status'])}</td></tr>`),
+    nonCast.map(a=>`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div><div class="mcard-sub">${a['Stage Label']||'—'} · ${a['Assigned Contractor']||'—'}</div><div class="mcard-bar" style="margin-top:6px"><div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-family:var(--mn);font-size:11px">${pct(a['Progress %']).toFixed(0)}%</span></div><div class="pw"><div class="pb" style="width:${pct(a['Progress %'])}%;background:${bc(a['Progress %'])}"></div></div></div></div>`).join('')
+  );
 
-  // NOCs
-  document.getElementById('proj-nocs').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--tl)"></span>NOCs</span><span class="cc">${nocs.length} NOCs</span></div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>NOC Type</th><th>Authority</th><th>Status</th><th>Expiry</th><th>Days Left</th></tr></thead>
-    <tbody>${nocs.map(n=>{const days=parseInt(n['Days to Expiry']); return `<tr>
-      <td style="font-weight:600">${n['NOC Type']||'—'}</td>
-      <td class="sm">${n['Authority Name']||'—'}</td>
-      <td>${badge(n['Current Status'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td>
-      <td style="font-family:var(--mn);font-size:11px;color:${isNaN(days)?'#64748b':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)'}">${isNaN(days)?'—':days+' days'}</td>
-    </tr>`}).join('')||'<tr><td colspan="5" class="empty">No NOCs</td></tr>'}</tbody></table></div>`;
+  simpleCard('proj-orders','Orders','var(--pu)',
+    ['Description','Status','Order By','Delivery','LPO'],
+    orders.map(o=>`<tr><td style="font-weight:600">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</td><td>${badge(o['Procurement Status'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(o['Order By Date'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(o['Expected Delivery Date'])}</td><td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td></tr>`),
+    orders.map(o=>`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span>${badge(o['Procurement Status'])}</div><div class="mcard-row" style="margin-top:6px"><span class="mcard-label">Order By ${fd(o['Order By Date'])}</span><span style="font-weight:700;font-family:var(--mn);color:var(--gd)">${fmtAED(o['LPO Value'])}</span></div></div>`).join('')
+  );
 
-  // IPC
-  document.getElementById('proj-ipc').innerHTML = `
-    <div class="ch"><span class="ct"><span class="dc" style="background:var(--red)"></span>IPC Payment Log</span><span class="cc">${ipcs.length} IPCs</span></div>
-    <div class="scroll"><table class="tbl"><thead><tr><th>IPC No</th><th>Work Covered</th><th>Period</th><th>Due Date</th><th>Paid Date</th><th>Status</th><th style="text-align:right">Gross</th><th style="text-align:right">Net Due</th></tr></thead>
-    <tbody>${ipcs.sort((a,b)=>new Date(b['Payment Due Date'])-new Date(a['Payment Due Date'])).map(r=>`<tr>
-      <td style="font-family:var(--mn);font-size:11px">${r['IPC Number']||'—'}</td>
-      <td class="sm" style="max-width:160px">${String(r['Work Covered']||'—').substring(0,50)}</td>
-      <td class="sm">${fds(r['Period From'])} – ${fds(r['Period To'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px">${fd(r['Actual Payment Date'])}</td>
-      <td>${badge(r['Payment Status'])}</td>
-      <td class="n sm">${fmtAED(r['Gross Amount'])}</td>
-      <td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td>
-    </tr>`).join('')||'<tr><td colspan="8" class="empty">No IPC records</td></tr>'}</tbody></table></div>`;
+  simpleCard('proj-nocs','NOCs','var(--tl)',
+    ['NOC Type','Authority','Status','Expiry','Days Left'],
+    nocs.map(n=>{const d=parseInt(n['Days to Expiry']);const c=isNaN(d)?'var(--dim)':d<30?'var(--red)':d<90?'var(--og)':'var(--gn)';return`<tr><td style="font-weight:700">${n['NOC Type']||'—'}</td><td class="sm">${n['Authority Name']||'—'}</td><td>${badge(n['Current Status'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td><td style="font-family:var(--mn);font-size:11px;color:${c}">${isNaN(d)?'—':d+' days'}</td></tr>`}),
+    nocs.map(n=>{const d=parseInt(n['Days to Expiry']);const c=isNaN(d)?'var(--dim)':d<30?'var(--red)':d<90?'var(--og)':'var(--gn)';return`<div class="mcard"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${n['NOC Type']||'—'}</span>${badge(n['Current Status'])}</div><div class="mcard-sub">${n['Authority Name']||'—'} · Expiry ${fd(n['Expiry Date'])}</div><div class="mcard-row" style="margin-top:4px"><span class="mcard-label">Days to Expiry</span><span style="font-family:var(--mn);color:${c}">${isNaN(d)?'—':d+' days'}</span></div></div>`}).join('')
+  );
+
+  simpleCard('proj-ipc','IPC Payment Log','var(--red)',
+    ['IPC No','Work Covered','Due Date','Paid Date','Status','Net Due'],
+    ipcs.sort((a,b)=>parseDate(b['Payment Due Date'])-parseDate(a['Payment Due Date'])).map(r=>`<tr><td style="font-family:var(--mn);font-size:11px">${r['IPC Number']||'—'}</td><td class="sm" style="max-width:160px">${String(r['Work Covered']||'—').substring(0,50)}</td><td style="font-family:var(--mn);font-size:10px">${fd(r['Payment Due Date'])}</td><td style="font-family:var(--mn);font-size:10px">${fd(r['Actual Payment Date'])}</td><td>${badge(r['Payment Status'])}</td><td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td></tr>`),
+    ipcs.map(r=>`<div class="mcard" style="${(r['Payment Status']||'').toLowerCase()==='pending'?'border-left:3px solid var(--red);':''}"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${r['IPC Number']||'—'}</span>${badge(r['Payment Status'])}</div><div class="mcard-sub">${String(r['Work Covered']||'').substring(0,50)}</div><div class="mcard-row" style="margin-top:6px"><span class="mcard-label">Due ${fd(r['Payment Due Date'])}</span><span style="font-weight:700;font-family:var(--mn);color:var(--red)">${fmtAED(r['Net Due'])}</span></div></div>`).join('')
+  );
 }
 
-// ── INIT ─────────────────────────────────────
-// Event delegation for project name clicks
-document.addEventListener('click', function(e) {
-  const td = e.target.closest('td[data-proj]');
-  if(td) gotoProject(td.dataset.proj);
+// ═══════════════════════════════════════════
+// EVENT DELEGATION — project name clicks
+// ═══════════════════════════════════════════
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-proj]');
+  if(t) gotoProject(t.dataset.proj);
+  // Mobile nav sync with desktop
+  const mnItem=e.target.closest('.mnav-item');
+  if(mnItem){document.querySelectorAll('.mnav-item').forEach(i=>i.classList.remove('active'));mnItem.classList.add('active');}
 });
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
 loadAll();
 setInterval(loadAll, 60*60*1000);
 </script>
