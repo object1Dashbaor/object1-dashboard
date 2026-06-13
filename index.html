@@ -188,31 +188,39 @@ body.tv-mode .tab{font-size:13px;padding:14px 22px}
 @media(max-width:600px){
   .main{padding:8px 10px}
   .kr{grid-template-columns:repeat(2,1fr);gap:8px}
-  .hdr{padding:0 10px;height:48px}
+  .hdr{padding:0 10px;height:46px}
   .logo-name{font-size:13px}
   .logo-sub{display:none}
   .kv{font-size:20px}
   .kl{font-size:9px}
   .ks{font-size:9px}
-  .tabs{padding:0 8px}
-  .tab{padding:10px 11px;font-size:9px;letter-spacing:.4px}
+  .tabs{padding:0 6px}
+  .tab{padding:9px 10px;font-size:8.5px;letter-spacing:.3px}
   .tbl th{padding:6px 8px;font-size:9px}
   .tbl td{padding:8px 8px;font-size:11px}
   .tv-btn{display:none}
-  .kpi{padding:11px 12px}
-  .ch{padding:9px 12px}
+  .kpi{padding:10px 11px}
+  .ch{padding:8px 12px}
   .ct{font-size:10px}
   .g2,.g3,.g13,.g31{grid-template-columns:1fr;gap:8px}
   .mb{margin-bottom:8px}
-  .card{border-radius:6px}
-  .scroll{max-height:260px}
-  /* Hide less critical columns on mobile */
+  .card{border-radius:8px}
+  .scroll{max-height:280px}
+  /* HIDE CHARTS ON MOBILE — not useful on small screen */
+  .chart-wrap.card{display:none}
+  /* Keep chart wraps inside cards visible but smaller */
+  .card .chart-wrap{padding:8px}
+  .card .chart-wrap canvas{max-height:130px}
+  /* Hide non-essential table columns */
   .tbl .hide-mobile{display:none}
+  /* Make g13 (charts+table) show only the table */
+  .g13{grid-template-columns:1fr}
+  .g13 > div:first-child{display:none}
 }
 @media(max-width:400px){
   .kr{grid-template-columns:1fr 1fr}
-  .kv{font-size:18px}
-  .tab{padding:9px 9px;font-size:8px}
+  .kv{font-size:17px}
+  .tab{padding:8px 8px;font-size:8px}
 }
 </style>
 </head>
@@ -248,11 +256,11 @@ body.tv-mode .tab{font-size:13px;padding:14px 22px}
   <div class="kr" id="e-kpis"><span class="spin"></span></div>
   <div class="g13">
     <div>
-      <div class="chart-wrap card mb" style="height:290px">
+      <div class="chart-wrap card mb chart-card" style="height:290px">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Project Health</span></div>
         <div class="chart-wrap"><canvas id="chart-health"></canvas></div>
       </div>
-      <div class="chart-wrap card mb" style="height:290px">
+      <div class="chart-wrap card mb chart-card" style="height:290px">
         <div class="ch"><span class="ct"><span class="dc" style="background:var(--og)"></span>Payment Status</span></div>
         <div class="chart-wrap"><canvas id="chart-payment"></canvas></div>
       </div>
@@ -429,9 +437,14 @@ function fds(d) {
   if(!d||d==='null'||d==='') return '—';
   const dt=new Date(d); return isNaN(dt)?String(d):dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
 }
-function pct(p){return Math.min(100,parseFloat(p)||0);}
+function pct(p){
+  const v = parseFloat(p)||0;
+  // Ragic % formula returns decimal (0.38) not percentage (38)
+  if(v > 0 && v <= 1) return Math.min(100, v * 100);
+  return Math.min(100, v);
+}
 function bc(p){const x=pct(p);return x<30?'var(--red)':x<70?'var(--og)':'var(--gn)';}
-function bar(p,w=70){return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${pct(p)}%;background:${bc(p)}"></div></div><span style="font-size:9px;color:#64748b;font-family:var(--mn)">${pct(p)}%</span></div>`;}
+function bar(p,w=70){const v=pct(p);return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${v}%;background:${bc(v)}"></div></div><span style="font-size:9px;color:#64748b;font-family:var(--mn)">${v.toFixed(0)}%</span></div>`;}
 function badge(s){
   if(!s||s==='null'||s==='') return '<span class="badge bd">—</span>';
   const l=s.toLowerCase().trim();
@@ -528,8 +541,8 @@ function makeBar(id, labels, datasets, opts={}) {
       responsive:true,maintainAspectRatio:true,
       plugins:{legend:{display:datasets.length>1,labels:{boxWidth:10,padding:10,font:{size:10}}}},
       scales:{
-        x:{ticks:{font:{size:9},maxRotation:30},grid:{color:'rgba(26,45,71,.5)'}},
-        y:{ticks:{font:{size:9},callback:v=>fmt(v)},grid:{color:'rgba(26,45,71,.5)'},...(opts.y||{})}
+        x:{ticks:{font:{size:9},maxRotation:30},grid:{color:'rgba(0,0,0,.06)'}},
+        y:{ticks:{font:{size:9},callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,.06)'},...(opts.y||{})}
       },
       ...opts
     }
@@ -546,7 +559,7 @@ function makeHBar(id, labels, data, color) {
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:true,
       plugins:{legend:{display:false}},
-      scales:{x:{max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(26,45,71,.5)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}
+      scales:{x:{max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'rgba(0,0,0,.06)'}},y:{ticks:{font:{size:10}},grid:{display:false}}}
     }
   });
 }
