@@ -56,6 +56,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);min-height:100
 .kpi.cg::after{background:var(--gn)}.kpi.cb::after{background:var(--bl)}
 .kpi.cp::after{background:var(--pu)}.kpi.cd::after{background:var(--gd)}
 .kpi.ct2::after{background:var(--tl)}
+.kpi.bg2::after{background:#0891b2}
+.kpi.bg2 .kv{color:#0f766e}
 .kl{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.9px;margin-bottom:5px;font-weight:700}
 .kv{font-size:22px;font-weight:800;color:var(--dark);line-height:1;letter-spacing:-1px}
 .ks{font-size:10px;color:var(--dim);margin-top:3px}
@@ -381,14 +383,20 @@ function buildExec(){
   const llCrit=O.filter(o=>o['Long Lead Item']==='Yes'&&(o['Procurement Status']||'').toLowerCase()==='not ordered');
   const totalCV=BS.reduce((s,b)=>s+nv(b['Revised Contract Value']),0);
 
+  const handedOver=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('handed')).length;
+  const design=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('design')).length;
+  const concept=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('concept')).length;
+  const notStarted=real.filter(p=>(p['Project Status']||'').toLowerCase().includes('not started')||(p['Project Status']||'').toLowerCase().includes('tender')).length;
+
   document.getElementById('e-kpis').innerHTML=[
     ['cr','Due This Week',fmt(dueWk.reduce((s,r)=>s+nv(r['Net Due']),0)),'AED · '+dueWk.length+' IPCs'],
     ['co','Due This Month',fmt(dueMo.reduce((s,r)=>s+nv(r['Net Due']),0)),'AED · '+dueMo.length+' IPCs'],
     ['cb','Total Outstanding',fmt(outAmt),'AED unpaid'],
-    ['co','Castings This Week',castWk.length,fmt(castWk.reduce((s,a)=>s+nv(a['Estimated Concrete Cost (AED)']),0))+' AED'],
-    ['cd','Castings This Month',castMo.length,fmt(castMoCost)+' AED est.'],
     ['cg','Under Construction',constr,real.length+' total projects'],
+    ['cb','Design / Tender',design+notStarted,concept+' concept'],
+    ['bg2','Handed Over',handedOver,'completed projects'],
     ['cr','Delayed',delayed,atRisk+' at risk'],
+    ['co','Castings This Month',castMo.length,fmt(castMoCost)+' AED est.'],
     ['cb','Portfolio Value',fmt(totalCV),'AED revised'],
     ['cr','LL Critical',llCrit.length,'not ordered'],
   ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
