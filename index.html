@@ -164,11 +164,12 @@ body.tv-mode .kv{font-size:34px}.body.tv-mode .tbl td{font-size:15px;padding:13p
 <body>
 <div class="hdr">
   <div class="logo">
-    <div class="logo-box">Object 1</div>
-    <div><div class="logo-name">Real Estate Development</div><div class="logo-sub">Owner Operations Dashboard</div></div>
+    <img src="https://www.object-1.com/wp-content/themes/dubai-theme/images/logo.svg" 
+         alt="Object1" style="height:32px;filter:brightness(0) invert(1);display:block"
+         onerror="this.outerHTML='<span style=\'color:#fff;font-weight:900;font-size:16px;letter-spacing:-0.5px\'>Object 1</span>'">
   </div>
   <div class="hdr-r">
-    <div class="sync-lbl" id="syncTime">Loading...</div>
+    <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--mn)">Owner Dashboard</div><div class="sync-lbl" id="syncTime">Loading...</div>
     <button class="tv-btn" onclick="toggleTV()">⛶ TV</button>
     <div class="live-pill"><span class="live-dot"></span>LIVE</div>
   </div>
@@ -329,7 +330,14 @@ async function loadAll(){
   }catch(e){
     console.error('loadAll:',e.message);
     document.getElementById('syncTime').textContent='Load failed';
-    document.getElementById('e-kpis').innerHTML=`<div style="padding:16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:12px">Failed: ${e.message} <button onclick="loadAll()" style="margin-left:10px;padding:5px 12px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer">Retry</button></div>`;
+    document.getElementById('e-kpis').innerHTML=`<div style="padding:16px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#dc2626;font-size:13px">
+      <b>Dashboard data failed to load</b><br>
+      <span style="font-size:11px;color:#64748b;margin-top:4px;display:block">Error: ${e.message}</span>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="loadAll()" style="padding:6px 14px;background:#2563eb;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:12px">Retry</button>
+        <button onclick="window.open('${API_URL}')" style="padding:6px 14px;background:#f8fafc;color:#1e3a5f;border:1px solid #e0e8f4;border-radius:5px;cursor:pointer;font-size:12px">Test API URL</button>
+      </div>
+    </div>`;
   }
 }
 
@@ -527,10 +535,18 @@ function buildProject(){
   rcl('pipc-m',ipcs.map(r=>`<div class="mcard" style="${(r['Payment Status']||'').toLowerCase()==='pending'?'border-left:3px solid var(--red);':''}"><div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${r['IPC Number']||'—'}</span>${badge(r['Payment Status'])}</div><div class="mcard-sub">${String(r['Work Covered']||'').substring(0,50)}</div><div class="mcard-row" style="margin-top:6px"><span class="mcard-label">Due ${fd(r['Payment Due Date'])}</span><span style="font-weight:700;font-family:var(--mn);color:var(--red)">${fmtAED(r['Net Due'])}</span></div></div>`),ML);
 }
 
-// INIT
+// INIT — tabs work immediately, data loads independently
+document.addEventListener('DOMContentLoaded', function() {
+  // Tabs already work via onclick in HTML
+  // Start data load separately
+  setTimeout(loadAll, 100);
+  setTimeout(()=>{
+    const el=document.getElementById('e-kpis');
+    if(el && el.querySelector('.spin')) loadAll();
+  }, 12000);
+  setInterval(loadAll, 60*60*1000);
+});
 loadAll();
-setTimeout(()=>{if(document.getElementById('e-kpis').querySelector('.spin')){loadAll();}},10000);
-setInterval(loadAll,60*60*1000);
 </script>
 </body>
 </html>
