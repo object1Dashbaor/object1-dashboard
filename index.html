@@ -610,6 +610,54 @@ function tbl(heads, rows){
 }
 
 // ═══════════════════════════════════════════
+// SHOW MORE HELPER
+// ═══════════════════════════════════════════
+const MOBILE_LIMIT = 5;  // items shown initially on mobile
+
+// Renders a mobile card list with show-more/less toggle
+function renderCardList(containerId, allCards, limit) {
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(allCards.length === 0){
+    el.innerHTML = '<div class="empty">No data</div>';
+    return;
+  }
+  const show = allCards.slice(0, limit);
+  const remaining = allCards.length - limit;
+  let html = show.join('');
+  if(remaining > 0){
+    html += `<button class="show-more-btn" onclick="expandList('${containerId}',this)">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="6 9 12 15 18 9"/></svg>
+      Show ${remaining} more
+      <span class="item-count-badge">${allCards.length} total</span>
+    </button>`;
+  }
+  el._allCards = allCards;
+  el.innerHTML = html;
+}
+
+function expandList(containerId, btn) {
+  const el = document.getElementById(containerId);
+  if(!el || !el._allCards) return;
+  // Show all
+  el.innerHTML = el._allCards.join('') + 
+    `<button class="show-more-btn" onclick="collapseList('${containerId}',this)">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="18 15 12 9 6 15"/></svg>
+      Show less
+    </button>`;
+  el._allCards_backup = el._allCards;
+}
+
+function collapseList(containerId, btn) {
+  const el = document.getElementById(containerId);
+  if(!el || !el._allCards_backup) return;
+  renderCardList(containerId, el._allCards_backup, MOBILE_LIMIT);
+  el._allCards = el._allCards_backup;
+  // Scroll back to top of container
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ═══════════════════════════════════════════
 // BUILD ALL
 // ═══════════════════════════════════════════
 function buildAll(){buildExec();buildFinance();buildConstruction();buildProcurement();buildNOC();populateProjectSelect();}
@@ -673,7 +721,7 @@ function buildExec(){
   );
 
   // Projects — mobile cards
-  document.getElementById('e-proj-cards').innerHTML=real.map(p=>`
+  renderCardList('e-proj-cards', real.map(p=>`
     <div class="mcard" data-proj="${p['Project Name']}" style="cursor:pointer">
       <div class="mcard-row" style="margin-bottom:4px">
         <div class="mcard-proj-link">${p['Project Name']}</div>
@@ -694,7 +742,7 @@ function buildExec(){
         <span class="mcard-label">Next milestone</span>
         <span style="font-size:11px;color:var(--dark)">${p['Next Milestone']||'—'}</span>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 
   // Castings
   const castAll=[...castWk,...castMo.filter(a=>!inR(a['Planned Start Date'],WK))].sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date']));
@@ -715,7 +763,7 @@ function buildExec(){
     ['Project','Activity','Stage','Contractor','Start','Status'],
     actsWk.map(a=>`<tr><td class="sm">${a['Project Name']||'—'}</td><td style="font-weight:600">${a['Activity Name']||'—'}</td><td class="sm">${a['Stage Label']||'—'}</td><td class="sm">${a['Assigned Contractor']||'—'}</td><td style="font-family:var(--mn);font-size:10px">${fds(a['Planned Start Date'])}</td><td>${badge(a['Status'])}</td></tr>`)
   );
-  document.getElementById('e-act-cards').innerHTML=actsWk.length?actsWk.map(a=>`
+  renderCardList('e-act-cards', actsWk.length?actsWk.map(a=>`
     <div class="mcard">
       <div class="mcard-row"><span class="mcard-proj-link">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div>
       <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
@@ -731,7 +779,7 @@ function buildExec(){
     ['Project','Item','Lead Time','Order By'],
     llCrit.map(o=>`<tr><td class="sm">${o['Project Name']||'—'}</td><td style="font-weight:600">${o['Order Description']||'—'}</td><td class="sm">${o['Lead Time']||'—'} wks</td><td style="font-family:var(--mn);font-size:10px;color:var(--red)">${fd(o['Order By Date'])}</td></tr>`)
   );
-  document.getElementById('e-ll-cards').innerHTML=llCrit.length?llCrit.map(o=>`
+  renderCardList('e-ll-cards', llCrit.length?llCrit.map(o=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span><span class="badge br">ACTION</span></div>
       <div class="mcard-sub">${o['Project Name']||'—'}</div>
@@ -763,7 +811,7 @@ function buildFinance(){
     ['co','Due This Month',fmt(dueMoAmt),'AED'],
     ['cr','Pending Payment',fmt(totalPend),'AED'],
     ['cb','Certified',fmt(totalCert),'AED'],
-  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
 
   const bData=BS.filter(b=>b['Project Name']&&b['Project Name']!=='null');
 
@@ -781,7 +829,7 @@ function buildFinance(){
     </tr>`)
   );
   // Budget mobile cards
-  document.getElementById('f-budget-cards').innerHTML=bData.map(b=>`
+  renderCardList('f-budget-cards', bData.map(b=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${b['Project Name']}</span>${badge(b['Project Status'])}</div>
       <div class="mcard-grid">
@@ -794,7 +842,7 @@ function buildFinance(){
         <div class="mcard-bar-top"><span class="mcard-label">Financial Progress</span><span style="font-size:11px;font-family:var(--mn)">${pct(b['Financial Progress %']).toFixed(0)}%</span></div>
         <div class="pw"><div class="pb" style="width:${pct(b['Financial Progress %'])}%;background:${bc(b['Financial Progress %'])}"></div></div>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 
   // Bar chart
   setTimeout(()=>{
@@ -819,14 +867,14 @@ function buildFinance(){
         <td class="n" style="font-weight:700;font-family:var(--mn);color:var(--red)">${fmtAED(r['Net Due'])}</td>
       </tr>`;})
   );
-  document.getElementById('f-upcoming-cards').innerHTML=upcoming.map(r=>` 
+  renderCardList('f-upcoming-cards', upcoming.map(r=>` 
     <div class="mcard" style="${inR(r['Payment Due Date'],WK)?'border-left:3px solid var(--red);':''}">
       <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${r['Project Name']||'—'}</span>${badge(r['Payment Status'])}</div>
       <div class="mcard-row" style="margin-top:6px">
         <span class="mcard-label">${r['IPC Number']||'—'} · Due ${fd(r['Payment Due Date'])}</span>
         <span style="font-weight:700;font-family:var(--mn);color:var(--red);font-size:13px">${fmtAED(r['Net Due'])}</span>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 
   // IPC log
   const all=IPC.filter(r=>r['IPC Number']&&r['IPC Number']!=='null').sort((a,b)=>parseDate(b['Payment Due Date'])-parseDate(a['Payment Due Date']));
@@ -843,7 +891,7 @@ function buildFinance(){
       <td class="n" style="font-weight:700;font-family:var(--mn)">${fmtAED(r['Net Due'])}</td>
     </tr>`)
   );
-  document.getElementById('f-ipc-cards').innerHTML=all.map(r=>`
+  renderCardList('f-ipc-cards', all.map(r=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${r['Project Name']||'—'} — ${r['IPC Number']||'—'}</span>${badge(r['Payment Status'])}</div>
       <div class="mcard-sub">${String(r['Work Covered']||'').substring(0,60)}</div>
@@ -851,7 +899,7 @@ function buildFinance(){
         <div class="mcard-item"><div class="mcard-item-lbl">Due Date</div><div class="mcard-item-val">${fd(r['Payment Due Date'])}</div></div>
         <div class="mcard-item"><div class="mcard-item-lbl">Net Due</div><div class="mcard-item-val" style="color:var(--red)">${fmtAED(r['Net Due'])}</div></div>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 }
 
 // ═══════════════════════════════════════════
@@ -871,7 +919,7 @@ function buildConstruction(){
     ['cr','Delayed Milestones',delM,'variance > 0'],
     ['co','Castings This Month',castMo.length,'pours planned'],
     ['cd','Casting Cost',fmt(castMoCost),'AED estimated'],
-  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
 
   // Castings
   const castAll=A.filter(a=>a['Is Casting Activity']==='Yes').sort((a,b)=>parseDate(a['Planned Start Date'])-parseDate(b['Planned Start Date']));
@@ -889,7 +937,7 @@ function buildConstruction(){
       <td>${badge(a['Status'])}</td>
     </tr>`)
   );
-  document.getElementById('c-cast-cards').innerHTML=castAll.length?castAll.map(a=>`
+  renderCardList('c-cast-cards', castAll.length?castAll.map(a=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:14px;color:var(--dark)">${a['Cast Element']||a['Activity Name']||'Slab Cast'}</span>${badge(a['Status'])}</div>
       <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
@@ -914,7 +962,7 @@ function buildConstruction(){
       <td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td>
     </tr>`)
   );
-  document.getElementById('c-stage-cards').innerHTML=sData.map(s=>`
+  renderCardList('c-stage-cards', sData.map(s=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${s['Stage Label']||'—'}</span>${badge(s['Status'])}</div>
       <div class="mcard-sub">${s['Project Name']||'—'}</div>
@@ -922,7 +970,7 @@ function buildConstruction(){
         <div class="mcard-bar-top"><span class="mcard-label">Completion</span><span style="font-size:11px;font-family:var(--mn)">${pct(s['Stage Completion %']).toFixed(0)}%</span></div>
         <div class="pw"><div class="pb" style="width:${pct(s['Stage Completion %'])}%;background:${bc(s['Stage Completion %'])}"></div></div>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 
   setTimeout(()=>{
     const sd=sData.filter(s=>n(s['Stage Completion %'])>0).slice(0,10);
@@ -943,7 +991,7 @@ function buildConstruction(){
       <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v:v||'—'} days</td>
     </tr>`})
   );
-  document.getElementById('c-mile-cards').innerHTML=mData.map(m=>{const v=n(m['Variance Days']);return`
+  renderCardList('c-mile-cards', mData.map(m=>{const v=n(m['Variance Days']);return`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${m['Milestone Label']||'—'}</span>${badge(m['Status'])}</div>
       <div class="mcard-sub">${m['Project Name']||'—'} · ${m['Stage Label']||'—'}</div>
@@ -951,7 +999,7 @@ function buildConstruction(){
         <span class="mcard-label">Planned End: ${fd(m['Planned End Date'])}</span>
         <span style="font-size:11px;font-family:var(--mn);color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--dim)'}">${v>0?'+'+v+'d':v<0?v+'d':'On time'}</span>
       </div>
-    </div>`}).join('');
+    </div>`}), MOBILE_LIMIT);
 
   // Activities
   const allA=A.filter(a=>a['Is Casting Activity']!=='Yes');
@@ -969,7 +1017,7 @@ function buildConstruction(){
       <td>${badge(a['Status'])}</td>
     </tr>`)
   );
-  document.getElementById('c-act-cards').innerHTML=allA.map(a=>`
+  renderCardList('c-act-cards', allA.map(a=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${a['Activity Name']||'—'}</span>${badge(a['Status'])}</div>
       <div class="mcard-sub">${a['Project Name']||'—'} · ${a['Stage Label']||'—'}</div>
@@ -981,7 +1029,7 @@ function buildConstruction(){
         <div class="mcard-bar-top"><span class="mcard-label">Progress</span><span style="font-size:11px;font-family:var(--mn)">${pct(a['Progress %']).toFixed(0)}%</span></div>
         <div class="pw"><div class="pb" style="width:${pct(a['Progress %'])}%;background:${bc(a['Progress %'])}"></div></div>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 }
 
 // ═══════════════════════════════════════════
@@ -1002,7 +1050,7 @@ function buildProcurement(){
     ['co','Pending Delivery',O.length-deliv.length,'in process'],
     ['cr','Not Ordered',notOrd.length,'action needed'],
     ['cr','LL Critical',ll.filter(o=>(o['Procurement Status']||'').toLowerCase()==='not ordered').length,'not ordered'],
-  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
 
   setTimeout(()=>{
     const statuses={};O.forEach(o=>{const s=o['Procurement Status']||'Unknown';statuses[s]=(statuses[s]||0)+1;});
@@ -1025,7 +1073,7 @@ function buildProcurement(){
         <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
       </tr>`;})
   );
-  document.getElementById('pr-ll-cards').innerHTML=ll.length?ll.map(o=>{
+  renderCardList('pr-ll-cards', ll.length?ll.map(o=>{
     const notO=(o['Procurement Status']||'').toLowerCase()==='not ordered';
     return`<div class="mcard" style="${notO?'border-left:3px solid var(--red);':''}">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}</span>${badge(o['Procurement Status'])}</div>
@@ -1050,7 +1098,7 @@ function buildProcurement(){
       <td class="n" style="font-family:var(--mn);font-size:11px;color:var(--gd)">${fmtAED(o['LPO Value'])}</td>
     </tr>`)
   );
-  document.getElementById('pr-all-cards').innerHTML=O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`
+  renderCardList('pr-all-cards', O.filter(o=>o['Project Name']&&o['Project Name']!=='null').map(o=>`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${o['Order Description']||'—'}${o['Long Lead Item']==='Yes'?'<span class="tag-ll">LL</span>':''}</span>${badge(o['Procurement Status'])}</div>
       <div class="mcard-sub">${o['Project Name']||'—'}${o['Category']?' · '+o['Category']:''}</div>
@@ -1058,7 +1106,7 @@ function buildProcurement(){
         <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val">${fd(o['Order By Date'])}</div></div>
         <div class="mcard-item"><div class="mcard-item-lbl">LPO Value</div><div class="mcard-item-val" style="color:var(--gd)">${fmtAED(o['LPO Value'])}</div></div>
       </div>
-    </div>`).join('');
+    </div>`), MOBILE_LIMIT);
 }
 
 // ═══════════════════════════════════════════
@@ -1075,7 +1123,7 @@ function buildNOC(){
     ['co','Pending / In Progress',pend,'awaiting'],
     ['cr','Expiring (30 days)',exp30.length,'renew urgently'],
     ['cb','Total NOCs',N.length,'tracked'],
-  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`).join('');
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
 
   setTimeout(()=>{
     const s={};N.forEach(n=>{const v=n['Current Status']||'Unknown';s[v]=(s[v]||0)+1;});
@@ -1098,7 +1146,7 @@ function buildNOC(){
       <td class="sm">${n['Assigned To']||'—'}</td>
     </tr>`})
   );
-  document.getElementById('n-noc-cards').innerHTML=nData.map(n=>{const days=parseInt(n['Days to Expiry']);const dc=isNaN(days)?'var(--dim)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';return`
+  renderCardList('n-noc-cards', nData.map(n=>{const days=parseInt(n['Days to Expiry']);const dc=isNaN(days)?'var(--dim)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';return`
     <div class="mcard">
       <div class="mcard-row"><span style="font-weight:700;font-size:13px;color:var(--dark)">${n['NOC Type']||'—'}</span>${badge(n['Current Status'])}</div>
       <div class="mcard-sub">${n['Project Name']||'—'} · ${n['Authority Name']||'—'}</div>
@@ -1108,7 +1156,7 @@ function buildNOC(){
         <div class="mcard-item"><div class="mcard-item-lbl">Days Left</div><div class="mcard-item-val" style="color:${dc}">${isNaN(days)?'—':days+' days'}</div></div>
         <div class="mcard-item"><div class="mcard-item-lbl">Assigned</div><div class="mcard-item-val">${n['Assigned To']||'—'}</div></div>
       </div>
-    </div>`}).join('');
+    </div>`}), MOBILE_LIMIT);
 }
 
 // ═══════════════════════════════════════════
@@ -1200,11 +1248,19 @@ function buildProject(){
     </div>`).join(''):'<div class="empty">No castings</div>'}`;
 
   // Stages, milestones, activities, orders, NOCs, IPC
-  const simpleCard=(id,title,color,headers,rows,mobileRows)=>{
-    document.getElementById(id).innerHTML=`
+  const simpleCard=(id,title,color,headers,rows,mobileCards)=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML=`
       <div class="ch"><span class="ct"><span class="dc" style="background:${color}"></span>${title}</span><span class="cc">${rows.length}</span></div>
       <div class="scroll"><div class="tbl-wrap"><table class="tbl">${tbl(headers,rows)}</table></div></div>
-      <div class="mlist">${mobileRows||''}</div>`;
+      <div class="mlist" id="${id}-cards"></div>`;
+    if(mobileCards){
+      // Accept both array and pre-joined string
+      const cards = Array.isArray(mobileCards) ? mobileCards : 
+        mobileCards.split('</div><div class="mcard"').map((c,i)=>i===0?c:('<div class="mcard"'+c)).filter(c=>c.trim());
+      renderCardList(id+'-cards', cards, MOBILE_LIMIT);
+    }
   };
 
   simpleCard('proj-stages','Stages','var(--gn)',
