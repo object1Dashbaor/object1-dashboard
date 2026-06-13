@@ -530,36 +530,48 @@ function hbadge(h,f){const v=h||f||'';if(!v||v==='null')return'<span class="badg
 // ═══════════════════════════════════════════
 async function fetchSheet(name){
   try{
-    const r=await fetch(BASE+encodeURIComponent(name));
+    const url = BASE+encodeURIComponent(name);
+    const r=await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
     const txt=await r.text();
+    if(!txt.includes('google.visualization')) throw new Error('Not a gviz response');
     const json=JSON.parse(txt.replace(/^[^{]*/,'').replace(/[^}]*$/,''));
+    if(!json.table) throw new Error('No table in response');
     const cols=json.table.cols.map(c=>c.label);
     return (json.table.rows||[]).map(row=>{
       const obj={};
       cols.forEach((c,i)=>{
         const cell=row.c?.[i];
         if(!cell){obj[c]='';return;}
-        // For date cells: use formatted value (.f) not raw Date() string (.v)
         const raw=cell.v;
         const fmt2=cell.f;
         if(raw!==null&&raw!==undefined&&String(raw).startsWith('Date(')){
-          // Convert to readable date string
-          obj[c]=String(raw); // keep Date() string — our parseDate() handles it
+          obj[c]=String(raw);
         } else {
           obj[c]=raw??fmt2??'';
         }
       });
       return obj;
     }).filter(row=>Object.values(row).some(v=>v!==''&&v!==null));
-  }catch(e){return[];}
+  }catch(e){
+    console.warn('fetchSheet failed for '+name+':', e.message);
+    return[];
+  }
 }
 
 async function loadAll(){
-  const names=['Projects','IPC Log','NOC Tracker','Stages','Milestones','Activities','Orders','Budget Summary'];
-  const res=await Promise.all(names.map(s=>fetchSheet(s)));
-  names.forEach((s,i)=>D[s]=res[i]);
-  document.getElementById('syncTime').textContent='Refreshed '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  buildAll();
+  try {
+    document.getElementById('syncTime').textContent='Loading...';
+    const names=['Projects','IPC Log','NOC Tracker','Stages','Milestones','Activities','Orders','Budget Summary'];
+    const res=await Promise.allSettled(names.map(s=>fetchSheet(s)));
+    res.forEach((r,i)=>{ D[names[i]] = r.status==='fulfilled' ? r.value : []; });
+    document.getElementById('syncTime').textContent='Refreshed '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    buildAll();
+  } catch(e) {
+    document.getElementById('syncTime').textContent='Error - retry';
+    document.getElementById('e-kpis').innerHTML='<div style="padding:20px;color:#dc2626;font-size:12px">Failed to load data. Check sheet is public. <button onclick="loadAll()" style="margin-left:8px;padding:4px 10px;background:#2563eb;color:#fff;border:none;border-radius:4px;cursor:pointer">Retry</button></div>';
+    console.error('loadAll error:', e);
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1315,6 +1327,14 @@ document.addEventListener('click',e=>{
 // INIT
 // ═══════════════════════════════════════════
 loadAll();
+// Retry if data doesn't load within 8 seconds
+setTimeout(()=>{
+  const kpis = document.getElementById('e-kpis');
+  if(kpis && kpis.querySelector('.spin')){
+    console.log('Data load timeout - retrying...');
+    loadAll();
+  }
+}, 8000);
 setInterval(loadAll, 60*60*1000);
 </script>
 </body>
