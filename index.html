@@ -811,7 +811,7 @@ function buildFinance(){
     ['co','Due This Month',fmt(dueMoAmt),'AED'],
     ['cr','Pending Payment',fmt(totalPend),'AED'],
     ['cb','Certified',fmt(totalCert),'AED'],
-  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`), MOBILE_LIMIT);
+  ].map((k,i)=>`<div class="kpi ${k[0]}" style="animation-delay:${i*.05}s"><div class="kl">${k[1]}</div><div class="kv">${k[2]}</div><div class="ks">${k[3]}</div></div>`:[]:[]), MOBILE_LIMIT);
 
   const bData=BS.filter(b=>b['Project Name']&&b['Project Name']!=='null');
 
@@ -970,7 +970,7 @@ function buildConstruction(){
         <div class="mcard-bar-top"><span class="mcard-label">Completion</span><span style="font-size:11px;font-family:var(--mn)">${pct(s['Stage Completion %']).toFixed(0)}%</span></div>
         <div class="pw"><div class="pb" style="width:${pct(s['Stage Completion %'])}%;background:${bc(s['Stage Completion %'])}"></div></div>
       </div>
-    </div>`), MOBILE_LIMIT);
+    </div>`:[]), MOBILE_LIMIT);
 
   setTimeout(()=>{
     const sd=sData.filter(s=>n(s['Stage Completion %'])>0).slice(0,10);
@@ -1106,7 +1106,7 @@ function buildProcurement(){
         <div class="mcard-item"><div class="mcard-item-lbl">Order By</div><div class="mcard-item-val">${fd(o['Order By Date'])}</div></div>
         <div class="mcard-item"><div class="mcard-item-lbl">LPO Value</div><div class="mcard-item-val" style="color:var(--gd)">${fmtAED(o['LPO Value'])}</div></div>
       </div>
-    </div>`), MOBILE_LIMIT);
+    </div>`:[]), MOBILE_LIMIT);
 }
 
 // ═══════════════════════════════════════════
