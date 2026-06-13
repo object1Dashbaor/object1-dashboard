@@ -20,7 +20,7 @@
   --tl:#00bfbf;
   --fn:'Outfit',sans-serif;--mn:'JetBrains Mono',monospace;
 }
-body{background:var(--bg);color:var(--t);font-family:var(--fn);min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
+body{background:#f0f4f9;color:#1e3a5f;font-family:var(--fn);min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
 
 /* HEADER */
 .hdr{
@@ -172,7 +172,7 @@ body.tv-mode .logo-sub{font-size:13px}
 body.tv-mode .tab{font-size:13px;padding:14px 22px}
 
 /* UTIL */
-.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--b);border-top-color:var(--bl);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #e0e8f4;border-top-color:var(--bl);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
 @keyframes sp{to{transform:rotate(360deg)}}
 .empty{padding:28px;text-align:center;color:#94a3b8;font-size:11px}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
@@ -221,7 +221,7 @@ body.tv-mode .tab{font-size:13px;padding:14px 22px}
 <div class="hdr">
   <div class="logo">
     <div>
-      <div class="logo-name">Object<span style="color:var(--bl)">1</span> <span style="color:var(--d);font-weight:400;font-size:13px">Real Estate Development</span></div>
+      <div class="logo-name">Object<span style="color:var(--bl)">1</span> <span style="color:#64748b;font-weight:400;font-size:13px">Real Estate Development</span></div>
       <div class="logo-sub">Owner Operations Dashboard</div>
     </div>
   </div>
@@ -335,8 +335,8 @@ body.tv-mode .tab{font-size:13px;padding:14px 22px}
 <!-- PAGE 6: PROJECT DETAIL -->
 <div class="page" id="p-project">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-    <div style="font-size:11px;color:var(--d);font-weight:700;text-transform:uppercase;letter-spacing:.7px">Select Project:</div>
-    <select id="proj-select" onchange="buildProject()" style="background:var(--card);border:1px solid var(--b);color:var(--br);padding:8px 14px;border-radius:6px;font-size:13px;font-family:var(--fn);min-width:280px;cursor:pointer">
+    <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.7px">Select Project:</div>
+    <select id="proj-select" onchange="buildProject()" style="background:#ffffff;border:1px solid #e0e8f4;color:#0f2042;padding:8px 14px;border-radius:6px;font-size:13px;font-family:var(--fn);min-width:280px;cursor:pointer">
       <option value="">— Choose a project —</option>
     </select>
     <div id="proj-health" style="margin-left:4px"></div>
@@ -431,7 +431,7 @@ function fds(d) {
 }
 function pct(p){return Math.min(100,parseFloat(p)||0);}
 function bc(p){const x=pct(p);return x<30?'var(--red)':x<70?'var(--og)':'var(--gn)';}
-function bar(p,w=70){return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${pct(p)}%;background:${bc(p)}"></div></div><span style="font-size:9px;color:var(--d);font-family:var(--mn)">${pct(p)}%</span></div>`;}
+function bar(p,w=70){return `<div style="display:flex;align-items:center;gap:5px"><div class="pw" style="width:${w}px"><div class="pb" style="width:${pct(p)}%;background:${bc(p)}"></div></div><span style="font-size:9px;color:#64748b;font-family:var(--mn)">${pct(p)}%</span></div>`;}
 function badge(s){
   if(!s||s==='null'||s==='') return '<span class="badge bd">—</span>';
   const l=s.toLowerCase().trim();
@@ -615,13 +615,13 @@ function buildExec() {
     <div class="scroll">
     <table class="tbl"><thead><tr><th>Project</th><th>Emirate</th><th>Status</th><th>Health</th><th>Progress</th><th>Delay</th><th>Next Milestone</th></tr></thead>
     <tbody>${real.map(p=>`<tr>
-      <td onclick="gotoProject('${p['Project Name'].replace(/'/g,'\\'')}')" style="cursor:pointer;"><div style="font-weight:700;font-size:12px;color:#70aaff;text-decoration:none">${p['Project Name']}</div><div class="sm">${p['Building Description']||''}</div></td>
+      <td style="cursor:pointer" data-proj="${p['Project Name']}"><div style="font-weight:700;font-size:12px;color:#2563eb">${p['Project Name']}</div><div class="sm">${p['Building Description']||''}</div></td>
       <td class="sm">${p['Emirate']||'—'}</td>
       <td>${badge(p['Project Status'])}</td>
       <td>${hbadge(p['Health Status'],p['Auto Health Flag'])}</td>
       <td>${bar(p['Overall Progress %'])}</td>
-      <td style="font-family:var(--mn);font-size:10px;color:${n(p['Total Delay'])>0?'var(--red)':'var(--d)'}">${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+'d':'—'}</td>
-      <td class="sm">${p['Next Milestone']||'—'}<br><span style="color:var(--d)">${fd(p['Next Milestone Date'])}</span></td>
+      <td style="font-family:var(--mn);font-size:10px;color:${n(p['Total Delay'])>0?'var(--red)':'#64748b'}">${n(p['Total Delay'])>0?'+'+n(p['Total Delay'])+'d':'—'}</td>
+      <td class="sm">${p['Next Milestone']||'—'}<br><span style="color:#64748b">${fd(p['Next Milestone Date'])}</span></td>
     </tr>`).join('')||'<tr><td colspan="7" class="empty">No projects</td></tr>'}</tbody></table></div>`;
 
   // Casting schedule
@@ -822,7 +822,7 @@ function buildConstruction() {
       <td class="sm">${m['Stage Label']||'—'}</td>
       <td>${badge(m['Status'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--d)'}">${v>0?'+'+v:v||'—'} days</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'#64748b'}">${v>0?'+'+v:v||'—'} days</td>
     </tr>`}).join('')||'<tr><td colspan="6" class="empty">No milestones</td></tr>'}</tbody></table></div>`;
 
   // All activities
@@ -936,7 +936,7 @@ function buildNOC() {
     <table class="tbl"><thead><tr><th>Project</th><th>Authority</th><th>NOC Type</th><th>Status</th><th>Submitted</th><th>Expected Approval</th><th>Expiry</th><th>Days to Expiry</th><th>Assigned</th></tr></thead>
     <tbody>${N.filter(n=>n['Project Name']&&n['Project Name']!=='null').map(n=>{
       const days=parseInt(n['Days to Expiry']);
-      const dc=isNaN(days)?'var(--d)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';
+      const dc=isNaN(days)?'#64748b':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)';
       return `<tr>
         <td class="sm">${n['Project Name']||'—'}</td>
         <td class="sm">${n['Authority Name']||'—'}</td>
@@ -1021,12 +1021,12 @@ function buildProject() {
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:2;min-width:280px">
-        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Developer</div><div style="font-size:12px;color:var(--t);margin-top:3px">${proj['Developer'] || '—'}</div></div>
-        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Main Contractor</div><div style="font-size:12px;color:var(--t);margin-top:3px">${proj['Main Contractor'] || '—'}</div></div>
-        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Project Manager</div><div style="font-size:12px;color:var(--t);margin-top:3px">${proj['Project Manager'] || '—'}</div></div>
-        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Planned Start</div><div style="font-size:11px;font-family:var(--mn);color:var(--t);margin-top:3px">${fd(proj['Planned Start Date'])}</div></div>
-        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Planned Completion</div><div style="font-size:11px;font-family:var(--mn);color:var(--t);margin-top:3px">${fd(proj['Planned Completion Date'])}</div></div>
-        <div><div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Total Delay</div><div style="font-size:11px;font-family:var(--mn);color:${n(proj['Total Delay'])>0?'var(--red)':'var(--gn)'};margin-top:3px">${n(proj['Total Delay'])>0?'+'+n(proj['Total Delay'])+' days':'On schedule'}</div></div>
+        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Developer</div><div style="font-size:12px;color:#1e3a5f;margin-top:3px">${proj['Developer'] || '—'}</div></div>
+        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Main Contractor</div><div style="font-size:12px;color:#1e3a5f;margin-top:3px">${proj['Main Contractor'] || '—'}</div></div>
+        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Project Manager</div><div style="font-size:12px;color:#1e3a5f;margin-top:3px">${proj['Project Manager'] || '—'}</div></div>
+        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Planned Start</div><div style="font-size:11px;font-family:var(--mn);color:#1e3a5f;margin-top:3px">${fd(proj['Planned Start Date'])}</div></div>
+        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Planned Completion</div><div style="font-size:11px;font-family:var(--mn);color:#1e3a5f;margin-top:3px">${fd(proj['Planned Completion Date'])}</div></div>
+        <div><div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Total Delay</div><div style="font-size:11px;font-family:var(--mn);color:${n(proj['Total Delay'])>0?'var(--red)':'var(--gn)'};margin-top:3px">${n(proj['Total Delay'])>0?'+'+n(proj['Total Delay'])+' days':'On schedule'}</div></div>
       </div>
     </div>`;
 
@@ -1052,13 +1052,13 @@ function buildProject() {
   document.getElementById('proj-budget').innerHTML = `
     <div class="ch"><span class="ct"><span class="dc" style="background:var(--bl)"></span>Budget Summary</span></div>
     <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${[['Original Contract',budget['Original Contract Value'],'var(--t)'],['Approved Variations',budget['Approved Variations'],'var(--og)'],['Revised Contract',budget['Revised Contract Value'],'var(--bl)'],['Total Certified',budget['Total IPC Certified'],'var(--tl)'],['Total Paid',budget['Total IPC Paid'],'var(--gn)'],['Balance Remaining',budget['Balance Remaining'],'var(--og)'],['Orders Committed',budget['Total Orders Committed'],'var(--pu)'],].map(([lbl,val,col])=>`
-        <div style="background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:6px;padding:10px 12px">
-          <div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">${lbl}</div>
+      ${[['Original Contract',budget['Original Contract Value'],'#1e3a5f'],['Approved Variations',budget['Approved Variations'],'var(--og)'],['Revised Contract',budget['Revised Contract Value'],'var(--bl)'],['Total Certified',budget['Total IPC Certified'],'var(--tl)'],['Total Paid',budget['Total IPC Paid'],'var(--gn)'],['Balance Remaining',budget['Balance Remaining'],'var(--og)'],['Orders Committed',budget['Total Orders Committed'],'var(--pu)'],].map(([lbl,val,col])=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid #e0e8f4;border-radius:6px;padding:10px 12px">
+          <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">${lbl}</div>
           <div style="font-size:15px;font-weight:700;font-family:var(--mn);color:${col};margin-top:4px">${fmtAED(val)}</div>
         </div>`).join('')}
-      <div style="background:rgba(255,255,255,.03);border:1px solid var(--b);border-radius:6px;padding:10px 12px">
-        <div style="font-size:9px;color:var(--d);text-transform:uppercase;letter-spacing:.7px">Financial Progress</div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid #e0e8f4;border-radius:6px;padding:10px 12px">
+        <div style="font-size:9px;color:#64748b;text-transform:uppercase;letter-spacing:.7px">Financial Progress</div>
         <div style="margin-top:8px">${bar(budget['Financial Progress %'],120)}</div>
       </div>
     </div>`;
@@ -1085,7 +1085,7 @@ function buildProject() {
       <td style="font-family:var(--mn);font-size:10px">${fd(s['Planned Start Date'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(s['Planned End Date'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(s['Forecast End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:10px;color:${n(s['Variance Days'])>0?'var(--red)':'var(--d)'}">${n(s['Variance Days'])>0?'+'+n(s['Variance Days'])+'d':'—'}</td>
+      <td style="font-family:var(--mn);font-size:10px;color:${n(s['Variance Days'])>0?'var(--red)':'#64748b'}">${n(s['Variance Days'])>0?'+'+n(s['Variance Days'])+'d':'—'}</td>
       <td>${badge(s['Gate Status'])}</td>
     </tr>`).join('')||'<tr><td colspan="8" class="empty">No stages — run Clone From Template</td></tr>'}</tbody></table></div>`;
 
@@ -1099,7 +1099,7 @@ function buildProject() {
       <td>${badge(m['Status'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(m['Planned End Date'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(m['Actual End Date'])}</td>
-      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'var(--d)'}">${v>0?'+'+v:v||'—'} days</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${v>0?'var(--red)':v<0?'var(--gn)':'#64748b'}">${v>0?'+'+v:v||'—'} days</td>
     </tr>`}).join('')||'<tr><td colspan="6" class="empty">No milestones</td></tr>'}</tbody></table></div>`;
 
   // Activities
@@ -1140,7 +1140,7 @@ function buildProject() {
       <td class="sm">${n['Authority Name']||'—'}</td>
       <td>${badge(n['Current Status'])}</td>
       <td style="font-family:var(--mn);font-size:10px">${fd(n['Expiry Date'])}</td>
-      <td style="font-family:var(--mn);font-size:11px;color:${isNaN(days)?'var(--d)':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)'}">${isNaN(days)?'—':days+' days'}</td>
+      <td style="font-family:var(--mn);font-size:11px;color:${isNaN(days)?'#64748b':days<30?'var(--red)':days<90?'var(--og)':'var(--gn)'}">${isNaN(days)?'—':days+' days'}</td>
     </tr>`}).join('')||'<tr><td colspan="5" class="empty">No NOCs</td></tr>'}</tbody></table></div>`;
 
   // IPC
@@ -1160,6 +1160,11 @@ function buildProject() {
 }
 
 // ── INIT ─────────────────────────────────────
+// Event delegation for project name clicks
+document.addEventListener('click', function(e) {
+  const td = e.target.closest('td[data-proj]');
+  if(td) gotoProject(td.dataset.proj);
+});
 loadAll();
 setInterval(loadAll, 60*60*1000);
 </script>
